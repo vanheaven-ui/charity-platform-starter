@@ -1,6 +1,6 @@
 import { PrismaClient, Prisma } from "@prisma/client";
 import bcrypt from "bcryptjs";
-import jwt from "jsonwebtoken"
+import jwt from "jsonwebtoken";
 
 const prisma = new PrismaClient();
 const saltRounds = 10; // For password hashing
@@ -52,4 +52,26 @@ export const loginUser = async (email: string, password: string) => {
   );
 
   return token;
+};
+
+export const getUserById = async (id: number) => {
+  const user = await prisma.user.findUnique({
+    where: {
+      id,
+    },
+    select: {
+      id: true,
+      name: true,
+      email: true,
+      role: true,
+      status: true,
+      preferredLanguage: true,
+    },
+  });
+
+  if (!user) {
+    throw new Error("User not found");
+  }
+
+  return user;
 };

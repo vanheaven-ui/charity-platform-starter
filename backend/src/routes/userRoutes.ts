@@ -1,9 +1,13 @@
 import { Router } from "express";
 import * as userController from "../controllers/userController";
+import { protect } from "../middleware/authMiddleware";
 
 const router = Router();
 
 router.post("/register", userController.registerUser);
 router.post("/login", userController.loginUser);
+
+// Protected route to use the protect middleware
+router.get("/profile", protect, userController.getProfile);
 
 export default router;
