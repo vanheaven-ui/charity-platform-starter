@@ -9,3 +9,13 @@ export const registerUser = async (req: Request, res: Response) => {
     res.status(500).json({ error: error.message });
   }
 };
+
+export const loginUser = async (req: Request, res: Response) => {
+    try {
+        const { email, password } = req.body;
+        const token = await userService.loginUser(email, password);
+        res.status(200).json({ token });
+    } catch (error: any) {
+        res.status(401).json({ error: error.message });
+    }
+}
