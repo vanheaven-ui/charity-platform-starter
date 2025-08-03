@@ -1,26 +1,27 @@
 "use client";
 import { useState } from "react";
-import axios from "axios";
+import { loginUser } from "../../lib/api";
+import { useRouter } from "next/navigation";
+import { useAuth } from "../../context/AuthContext";
 
 export default function Login() {
+  const router = useRouter();
+  const { login } = useAuth();
   const [formData, setFormData] = useState({
     email: "",
     password: "",
   });
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const { name, value } = e.target;
-    setFormData({ ...formData, [name]: value });
+    setFormData({ ...formData, [e.target.name]: e.target.value });
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     try {
-      const res = await axios.post("http://localhost:5000/api/login", formData);
-      console.log("Login successful, received token:", res.data.token);
-      // Store token in localStorage or context API
-      localStorage.setItem("token", res.data.token);
-      // Redirect to dashboard
+      const res = await loginUser(formData);
+      login(res.token);
+      router.push("/dashboard");
     } catch (error) {
       console.error("Login failed:", error);
     }

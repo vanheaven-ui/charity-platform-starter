@@ -1,9 +1,10 @@
 "use client";
-
-import React, { FormEvent, useState } from "react";
-import axios from "axios";
+import { useState } from "react";
+import { registerUser } from "../../lib/api";
+import { useRouter } from "next/navigation";
 
 export default function Register() {
+  const router = useRouter();
   const [formData, setFormData] = useState({
     name: "",
     email: "",
@@ -11,25 +12,22 @@ export default function Register() {
   });
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const { name, value } = e.target;
-    setFormData({ ...formData, [name]: value });
+    setFormData({ ...formData, [e.target.name]: e.target.value });
   };
 
-  const handleSubmit = async (e: FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-
     try {
-      const res = await axios.post("http://localhost:5000/api/register", {
+      await registerUser({
         ...formData,
         status: "active",
         preferredLanguage: "en",
         role: "Donor",
       });
-
-      console.log("Registrtaion successful:", res.data);
-      // Redirect to the login page or show a success message
+      console.log("Registration successful!");
+      router.push("/login");
     } catch (error) {
-      console.error("Registration Failed:", error);
+      console.error("Registration failed:", error);
     }
   };
 
