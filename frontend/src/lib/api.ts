@@ -28,4 +28,39 @@ export const getProfile = async (token: string) => {
 export const getProjects = async () => {
   const response = await axios.get(`${API_URL}/projects`);
   return response.data;
-}
+};
+
+export const createProject = async (projectdata: any, token: string) => {
+  const response = await axios.post(`${API_URL}/projects`, {
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+  });
+  return response.data;
+};
+
+export const updateProject = async (
+  projectId: number,
+  projectData: any,
+  token: string
+) => {
+  const response = await axios.put(
+    `${API_URL}/projects/${projectId}`,
+    projectData,
+    {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    }
+  );
+  return response.data;
+};
+
+export const deleteProject = async (projectId: number, token: string) => {
+  const response = await axios.delete(`${API_URL}/projects/${projectId}`, {
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+  });
+  return response.data;
+};

@@ -31,6 +31,9 @@ export default function Navbar() {
           {user ? (
             <>
               <li>
+                <Link href="/admin/projects">Manage Projects</Link>
+              </li>
+              <li>
                 <Link href="/dashboard">Dashboard</Link>
               </li>
               <li>
