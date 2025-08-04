@@ -24,3 +24,8 @@ export const getProfile = async (token: string) => {
   });
   return response.data;
 };
+
+export const getProjects = async () => {
+  const response = await axios.get(`${API_URL}/projects`);
+  return response.data;
+}
