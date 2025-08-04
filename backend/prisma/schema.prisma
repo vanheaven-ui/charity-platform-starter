@@ -27,3 +27,20 @@ model User {
   status           String
   preferredLanguage String
 }
+
+model Project {
+  id          Int      @id @default(autoincrement())
+  name        String   @unique
+  description String
+  goal        Int
+  raised      Int      @default(0)
+  status      Status   @default(Active)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
+enum Status {
+  Active
+  Completed
+  Cancelled
+}

@@ -4,6 +4,7 @@ import cors from "cors";
 
 
 import userRoutes from "./routes/userRoutes";
+import projectRoutes from "./routes/projectRoutes";
 
 dotenv.config();
 
@@ -20,6 +21,7 @@ app.use(
 app.use(express.json()); // Enabale Express to parse JSON bodies
 
 app.use("/api", userRoutes);
+app.use("/api/projects", projectRoutes)
 
 app.listen(port, () => {
   console.log(`Server running on port ${port}`);
