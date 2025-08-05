@@ -19,7 +19,8 @@ export const createProject = async (req: AuthRequest, res: Response) => {
 
 export const getProjects = async (req: Request, res: Response) => {
   try {
-    const projects = await projectService.getProjects();
+    const { search } = req.query;
+        const projects = await projectService.getProjects(search as string);
     res.status(200).json(projects);
   } catch (error: any) {
     res.status(500).json({ error: error.message });
