@@ -80,3 +80,12 @@ export const getMyDonations = async (token: string) => {
   });
   return response.data;
 };
+
+export const updateProfile = async (updateData: any, token: string) => {
+  const response = await axios.put(`${API_URL}/profile`, updateData, {
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+  });
+  return response.data;
+};

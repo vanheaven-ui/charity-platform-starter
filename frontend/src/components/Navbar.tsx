@@ -25,20 +25,22 @@ export default function Navbar() {
           <li>
             <Link href="/projects">Projects</Link>
           </li>
-          <li>
-            <Link href="/about">About</Link>
-          </li>
           {user ? (
             <>
               <li>
-                <Link href="/my-donations">My Donations</Link>
-              </li>
-              <li>
-                <Link href="/admin/projects">Manage Projects</Link>
-              </li>
-              <li>
                 <Link href="/dashboard">Dashboard</Link>
               </li>
+              <li>
+                <Link href="/profile">Profile</Link>
+              </li>
+              <li>
+                <Link href="/my-donations">My Donations</Link>
+              </li>
+              {user.role === "Admin" && (
+                <li>
+                  <Link href="/admin/projects">Manage Projects</Link>
+                </li>
+              )}
               <li>
                 <button
                   onClick={handleLogout}
