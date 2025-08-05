@@ -15,3 +15,14 @@ export const getDonationsByProject = async () => {
     },
   });
 };
+
+export const getMonthlyDonations = async () => {
+  return prisma.$queryRaw`
+    SELECT
+      strftime('%Y-%m', "createdAt") AS month,
+      SUM(amount) AS totalAmount
+    FROM "Donation"
+    GROUP BY month
+    ORDER BY month ASC;
+  `;
+};

@@ -10,5 +10,10 @@ router.get(
   protect,
   dashboardController.getDonationsByProject
 );
+router.get(
+  "/monthly-donations",
+  protect,
+  dashboardController.getMonthlyDonations
+);
 
 export default router;
