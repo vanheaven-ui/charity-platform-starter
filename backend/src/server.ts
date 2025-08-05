@@ -5,6 +5,7 @@ import cors from "cors";
 
 import userRoutes from "./routes/userRoutes";
 import projectRoutes from "./routes/projectRoutes";
+import donationRoutes from "./routes/donationRoutes";
 
 dotenv.config();
 
@@ -22,6 +23,7 @@ app.use(express.json()); // Enabale Express to parse JSON bodies
 
 app.use("/api", userRoutes);
 app.use("/api/projects", projectRoutes)
+app.use('/api/donations', donationRoutes);
 
 app.listen(port, () => {
   console.log(`Server running on port ${port}`);
