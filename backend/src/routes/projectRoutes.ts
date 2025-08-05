@@ -1,6 +1,7 @@
 import { Router} from "express";
 import * as projectController from "../controllers/projectController";
 import { protect } from "../middleware/authMiddleware";   
+import { adminProtect } from "../middleware/adminMiddleware";
 
 const router = Router();
 
@@ -9,8 +10,8 @@ router.get("/", projectController.getProjects);
 router.get("/:id", projectController.getProjectById); 
 
 // Protected routes (for creating, updating, and deleting projects)
-router.post("/", protect, projectController.createProject);
-router.put("/:id", protect, projectController.updateProject); 
-router.delete("/:id", protect, projectController.deleteProject); 
+router.post("/", protect, adminProtect, projectController.createProject);
+router.put("/:id", protect, adminProtect, projectController.updateProject); 
+router.delete("/:id", protect, adminProtect, projectController.deleteProject); 
 
 export default router;
