@@ -1,7 +1,8 @@
 "use client";
 import { useState, useEffect } from "react";
 import { getProjects } from "../../lib/api";
-import { useAuth } from "@/context/AuthContext";
+import { useAuth } from "../../context/AuthContext";
+import DonationModal from "@/components/DonationsModal";
 
 interface Project {
   id: number;
@@ -15,21 +16,33 @@ export default function Projects() {
   const { user } = useAuth();
   const [projects, setProjects] = useState<Project[]>([]);
   const [loading, setLoading] = useState(true);
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [selectedProject, setSelectedProject] = useState<Project | null>(null);
+
+  const fetchProjects = async () => {
+    try {
+      const data = await getProjects();
+      setProjects(data);
+      setLoading(false);
+    } catch (error) {
+      console.error("Failed to fetch projects:", error);
+      setLoading(false);
+    }
+  };
 
   useEffect(() => {
-    const fetchProjects = async () => {
-      try {
-        const data = await getProjects();
-        setProjects(data);
-        setLoading(false);
-      } catch (error) {
-        console.error("Failed to fetch projects:", error);
-        setLoading(false);
-      }
-    };
-
     fetchProjects();
   }, []);
+
+  const handleDonateClick = (project: Project) => {
+    setSelectedProject(project);
+    setIsModalOpen(true);
+  };
+
+  const handleDonationSuccess = () => {
+    // Refresh the projects list to show the updated "raised" amount
+    fetchProjects();
+  };
 
   if (loading) {
     return (
@@ -58,7 +71,7 @@ export default function Projects() {
                 </div>
                 {user && (
                   <button
-                    onClick={() => alert(`Donate to project: ${project.name}`)}
+                    onClick={() => handleDonateClick(project)}
                     className="mt-4 px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700"
                   >
                     Donate
@@ -71,6 +84,14 @@ export default function Projects() {
           )}
         </div>
       </div>
+      {isModalOpen && selectedProject && (
+        <DonationModal
+          projectId={selectedProject.id}
+          projectName={selectedProject.name}
+          onClose={() => setIsModalOpen(false)}
+          onDonationSuccess={handleDonationSuccess}
+        />
+      )}
     </div>
   );
 }
