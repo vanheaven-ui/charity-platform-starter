@@ -1,5 +1,5 @@
 "use client";
-import { useState, useEffect } from "react";
+import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { useAuth } from "../../../context/AuthContext";
 import {
@@ -21,6 +21,9 @@ export default function AdminProjects() {
   const { user, loading } = useAuth();
   const router = useRouter();
   const [projects, setProjects] = useState<Project[]>([]);
+  const [pageLoading, setPageLoading] = useState(true);
+
+  // Form state
   const [formData, setFormData] = useState({
     name: "",
     description: "",
@@ -30,10 +33,10 @@ export default function AdminProjects() {
   const [currentProjectId, setCurrentProjectId] = useState<number | null>(null);
 
   useEffect(() => {
-    if (!loading && !user) {
-      router.push("/login");
-    }
-    if (user) {
+    if (!loading && (!user || user.role !== "Admin")) {
+      // Redirect non-admin users to the home page
+      router.push("/");
+    } else if (user && user.role === "Admin") {
       fetchProjects();
     }
   }, [user, loading, router]);
@@ -42,32 +45,43 @@ export default function AdminProjects() {
     try {
       const data = await getProjects();
       setProjects(data);
+      setPageLoading(false);
     } catch (error) {
       console.error("Failed to fetch projects:", error);
+      setPageLoading(false);
     }
   };
 
-  const handleCreateOrUpdate = async (e: React.FormEvent) => {
+  const handleChange = (
+    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
+  ) => {
+    const { name, value } = e.target;
+    setFormData((prev) => ({
+      ...prev,
+      [name]: name === "goal" ? Number(value) : value,
+    }));
+  };
+
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!user) return;
     try {
-      if (isEditing && currentProjectId !== null) {
-        await updateProject(
-          currentProjectId,
-          formData,
-          localStorage.getItem("token")!
-        );
-        console.log("Project updated successfully");
-      } else {
-        await createProject(formData, localStorage.getItem("token")!);
-        console.log("Project created successfully");
+      const token = localStorage.getItem("token");
+      if (token) {
+        if (isEditing && currentProjectId) {
+          await updateProject(currentProjectId, formData, token);
+          alert("Project updated successfully!");
+        } else {
+          await createProject(formData, token);
+          alert("Project created successfully!");
+        }
+        setFormData({ name: "", description: "", goal: 0 });
+        setIsEditing(false);
+        setCurrentProjectId(null);
+        fetchProjects(); // Refresh the list
       }
-      setFormData({ name: "", description: "", goal: 0 });
-      setIsEditing(false);
-      setCurrentProjectId(null);
-      fetchProjects(); // Refresh the list
     } catch (error) {
       console.error("Failed to save project:", error);
+      alert("Failed to save project. Please try again.");
     }
   };
 
@@ -82,21 +96,22 @@ export default function AdminProjects() {
   };
 
   const handleDelete = async (projectId: number) => {
-    if (
-      !user ||
-      !window.confirm("Are you sure you want to delete this project?")
-    )
-      return;
-    try {
-      await deleteProject(projectId, localStorage.getItem("token")!);
-      console.log("Project deleted successfully");
-      fetchProjects(); // Refresh the list
-    } catch (error) {
-      console.error("Failed to delete project:", error);
+    if (window.confirm("Are you sure you want to delete this project?")) {
+      try {
+        const token = localStorage.getItem("token");
+        if (token) {
+          await deleteProject(projectId, token);
+          alert("Project deleted successfully!");
+          fetchProjects(); // Refresh the list
+        }
+      } catch (error) {
+        console.error("Failed to delete project:", error);
+        alert("Failed to delete project. Please try again.");
+      }
     }
   };
 
-  if (loading || !user) {
+  if (pageLoading || loading) {
     return (
       <div className="flex items-center justify-center min-h-screen">
         <p>Loading...</p>
@@ -104,99 +119,114 @@ export default function AdminProjects() {
     );
   }
 
+  // Redirect if not an admin
+  if (!user || user.role !== "Admin") {
+    return null;
+  }
+
   return (
     <div className="bg-gray-100 min-h-screen p-8">
-      <div className="container mx-auto">
+      <div className="container mx-auto bg-white p-8 rounded-lg shadow-md">
         <h1 className="text-3xl font-bold mb-6">Manage Projects</h1>
-        <div className="bg-white p-6 rounded-lg shadow-md mb-6">
-          <h2 className="text-xl font-bold mb-4">
+
+        {/* Project Form */}
+        <form
+          onSubmit={handleSubmit}
+          className="mb-8 p-6 border rounded-lg bg-blue-50"
+        >
+          <h2 className="text-xl font-semibold mb-4">
             {isEditing ? "Edit Project" : "Create New Project"}
           </h2>
-          <form onSubmit={handleCreateOrUpdate} className="space-y-4">
-            <input
-              type="text"
-              placeholder="Project Name"
-              value={formData.name}
-              onChange={(e) =>
-                setFormData({ ...formData, name: e.target.value })
-              }
-              className="w-full px-4 py-2 border rounded-md"
-              required
-            />
-            <textarea
-              placeholder="Project Description"
-              value={formData.description}
-              onChange={(e) =>
-                setFormData({ ...formData, description: e.target.value })
-              }
-              className="w-full px-4 py-2 border rounded-md"
-              rows={3}
-              required
-            />
-            <input
-              type="number"
-              placeholder="Funding Goal"
-              value={formData.goal}
-              onChange={(e) =>
-                setFormData({
-                  ...formData,
-                  goal: parseInt(e.target.value) || 0,
-                })
-              }
-              className="w-full px-4 py-2 border rounded-md"
-              required
-            />
+          <div className="space-y-4">
+            <div>
+              <label className="block text-gray-700">Name</label>
+              <input
+                type="text"
+                name="name"
+                value={formData.name}
+                onChange={handleChange}
+                className="w-full px-3 py-2 border rounded-md"
+                required
+              />
+            </div>
+            <div>
+              <label className="block text-gray-700">Description</label>
+              <textarea
+                name="description"
+                value={formData.description}
+                onChange={handleChange}
+                className="w-full px-3 py-2 border rounded-md"
+                rows={4}
+                required
+              />
+            </div>
+            <div>
+              <label className="block text-gray-700">Goal ($)</label>
+              <input
+                type="number"
+                name="goal"
+                value={formData.goal}
+                onChange={handleChange}
+                className="w-full px-3 py-2 border rounded-md"
+                min="0"
+                required
+              />
+            </div>
             <button
               type="submit"
-              className="px-4 py-2 text-white bg-blue-600 rounded-lg hover:bg-blue-700"
+              className="px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700"
             >
-              {isEditing ? "Update Project" : "Create Project"}
+              {isEditing ? "Save Changes" : "Create Project"}
             </button>
             {isEditing && (
               <button
                 type="button"
                 onClick={() => {
-                  setFormData({ name: "", description: "", goal: 0 });
                   setIsEditing(false);
                   setCurrentProjectId(null);
+                  setFormData({ name: "", description: "", goal: 0 });
                 }}
-                className="ml-4 px-4 py-2 text-white bg-gray-500 rounded-lg hover:bg-gray-600"
+                className="ml-2 px-4 py-2 bg-gray-400 text-white rounded-lg hover:bg-gray-500"
               >
                 Cancel
               </button>
             )}
-          </form>
-        </div>
+          </div>
+        </form>
 
-        <div className="bg-white p-6 rounded-lg shadow-md">
-          <h2 className="text-xl font-bold mb-4">Existing Projects</h2>
-          <ul className="space-y-4">
-            {projects.map((project) => (
-              <li
+        {/* Projects List */}
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          {projects.length > 0 ? (
+            projects.map((project) => (
+              <div
                 key={project.id}
-                className="flex justify-between items-center bg-gray-50 p-4 rounded-lg shadow-sm"
+                className="bg-blue-50 p-6 rounded-lg shadow-sm"
               >
-                <div>
-                  <h3 className="font-semibold">{project.name}</h3>
-                  <p className="text-gray-600 text-sm">{project.description}</p>
+                <h2 className="text-xl font-semibold mb-2">{project.name}</h2>
+                <p className="text-gray-700 mb-4">{project.description}</p>
+                <div className="text-sm text-gray-500">
+                  <p>Goal: ${project.goal.toLocaleString()}</p>
+                  <p>Raised: ${project.raised.toLocaleString()}</p>
                 </div>
-                <div className="flex space-x-2">
+                <div className="mt-4 flex space-x-2">
                   <button
                     onClick={() => handleEdit(project)}
-                    className="px-3 py-1 text-sm text-white bg-yellow-500 rounded-lg hover:bg-yellow-600"
+                    className="px-3 py-1 bg-blue-500 text-white rounded-lg hover:bg-blue-600"
                   >
                     Edit
                   </button>
                   <button
                     onClick={() => handleDelete(project.id)}
-                    className="px-3 py-1 text-sm text-white bg-red-500 rounded-lg hover:bg-red-600"
+                    className="px-3 py-1 bg-red-500 text-white rounded-lg hover:bg-red-600"
                   >
                     Delete
                   </button>
                 </div>
-              </li>
-            ))}
-          </ul>
+              </div>
+            ))
+          ) : (
+            <p className="text-gray-500">No projects found.</p>
+          )}
         </div>
       </div>
     </div>
