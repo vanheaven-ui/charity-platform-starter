@@ -91,3 +91,15 @@ export const updateProfile = async (updateData: any, token: string) => {
   });
   return response.data;
 };
+
+export const getDonationsByProject = async (token: string) => {
+  const response = await axios.get(
+    `${API_URL}/dashboard/donations-by-project`,
+    {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    }
+  );
+  return response.data;
+};
