@@ -1,16 +1,73 @@
 "use client";
-import { useEffect } from "react";
-import Link from "next/link";
+import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { useAuth } from "../../context/AuthContext";
+import Link from "next/link";
+import { getDonationsByProject, getProjects } from "../../lib/api";
+import { Bar } from "react-chartjs-2";
+import {
+  Chart as ChartJS,
+  CategoryScale,
+  LinearScale,
+  BarElement,
+  Title,
+  Tooltip,
+  Legend,
+} from "chart.js";
+
+// Register Chart.js components
+ChartJS.register(
+  CategoryScale,
+  LinearScale,
+  BarElement,
+  Title,
+  Tooltip,
+  Legend
+);
+
+interface Project {
+  id: number;
+  name: string;
+}
+
+interface ChartDataPoint {
+  projectId: number;
+  _sum: {
+    amount: number;
+  };
+}
 
 export default function Dashboard() {
   const { user, loading } = useAuth();
   const router = useRouter();
+  const [donationsByProject, setDonationsByProject] = useState<
+    ChartDataPoint[]
+  >([]);
+  const [projects, setProjects] = useState<Project[]>([]);
 
   useEffect(() => {
     if (!loading && !user) {
       router.push("/login");
+    }
+
+    if (user && user.role === "Admin") {
+      const fetchData = async () => {
+        try {
+          const token = localStorage.getItem("token");
+          if (token) {
+            // Fetch projects to get their names
+            const allProjects = await getProjects();
+            setProjects(allProjects);
+
+            // Fetch dashboard data
+            const data = await getDonationsByProject(token);
+            setDonationsByProject(data);
+          }
+        } catch (error) {
+          console.error("Failed to fetch dashboard data:", error);
+        }
+      };
+      fetchData();
     }
   }, [user, loading, router]);
 
@@ -22,27 +79,69 @@ export default function Dashboard() {
     );
   }
 
+  // Map project IDs to names for the chart labels
+  const getProjectName = (projectId: number) => {
+    const project = projects.find((p) => p.id === projectId);
+    return project ? project.name : `Project ${projectId}`;
+  };
+
+  const chartData = {
+    labels: donationsByProject.map((d) => getProjectName(d.projectId)),
+    datasets: [
+      {
+        label: "Total Donations ($)",
+        data: donationsByProject.map((d) => d._sum.amount),
+        backgroundColor: "rgba(59, 130, 246, 0.5)",
+        borderColor: "rgba(59, 130, 246, 1)",
+        borderWidth: 1,
+      },
+    ],
+  };
+
+  const chartOptions = {
+    responsive: true,
+    plugins: {
+      legend: {
+        position: "top" as const,
+      },
+      title: {
+        display: true,
+        text: "Donations by Project",
+      },
+    },
+    scales: {
+      y: {
+        beginAtZero: true,
+        title: {
+          display: true,
+          text: "Amount ($)",
+        },
+      },
+      x: {
+        title: {
+          display: true,
+          text: "Project",
+        },
+      },
+    },
+  };
+
   return (
     <div className="bg-gray-100 min-h-screen p-8">
       <div className="container mx-auto bg-white p-8 rounded-lg shadow-md">
         <h1 className="text-3xl font-bold mb-4">Welcome, {user.name}!</h1>
-        <p className="text-gray-600 mb-6">
-          This is your personal dashboard. Here you can manage your account and
-          view your activities.
-        </p>
+        <p className="text-gray-600 mb-6">This is your personal dashboard.</p>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-          <Link
-            href="/my-donations"
-            className="block p-6 bg-blue-50 rounded-lg shadow-sm hover:shadow-lg transition-shadow duration-300"
-          >
-            <h2 className="text-xl font-semibold text-blue-800">
-              My Donations
-            </h2>
-            <p className="text-gray-700 mt-2">
-              View a history of all your past contributions.
-            </p>
-          </Link>
+        {user.role === "Admin" && (
+          <div className="mt-8">
+            <h2 className="text-2xl font-bold mb-4">Admin Overview</h2>
+            <div className="bg-white p-6 rounded-lg shadow-lg">
+              <Bar options={chartOptions} data={chartData} />
+            </div>
+          </div>
+        )}
+
+        <div className="mt-8 grid grid-cols-1 md:grid-cols-2 gap-6">
           <Link
             href="/profile"
             className="block p-6 bg-blue-50 rounded-lg shadow-sm hover:shadow-lg transition-shadow duration-300"
@@ -52,6 +151,17 @@ export default function Dashboard() {
             </h2>
             <p className="text-gray-700 mt-2">
               Update your personal information and password.
+            </p>
+          </Link>
+          <Link
+            href="/my-donations"
+            className="block p-6 bg-blue-50 rounded-lg shadow-sm hover:shadow-lg transition-shadow duration-300"
+          >
+            <h2 className="text-xl font-semibold text-blue-800">
+              My Donations
+            </h2>
+            <p className="text-gray-700 mt-2">
+              View a history of all your past contributions.
             </p>
           </Link>
           {user.role === "Admin" && (
