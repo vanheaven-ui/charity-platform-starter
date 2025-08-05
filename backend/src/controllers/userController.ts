@@ -12,24 +12,38 @@ export const registerUser = async (req: Request, res: Response) => {
 };
 
 export const loginUser = async (req: Request, res: Response) => {
-    try {
-        const { email, password } = req.body;
-        const token = await userService.loginUser(email, password);
-        res.status(200).json({ token });
-    } catch (error: any) {
-        res.status(401).json({ error: error.message });
-    }
-}
+  try {
+    const { email, password } = req.body;
+    const token = await userService.loginUser(email, password);
+    res.status(200).json({ token });
+  } catch (error: any) {
+    res.status(401).json({ error: error.message });
+  }
+};
 
 export const getProfile = async (req: AuthRequest, res: Response) => {
-    try {
-       if (!req.user) {
-        return res.status(401).json({ error: "User not authenticated" })
-       } 
-       const userProfile = await userService.getUserById(req.user.userId)
-       res.status(200).json(userProfile)
-    } catch (error: any) {
-        res.status(404).json({ error: error.message});
+  try {
+    if (!req.user) {
+      return res.status(401).json({ error: "User not authenticated" });
     }
-}
+    const userProfile = await userService.getUserById(req.user.userId);
+    res.status(200).json(userProfile);
+  } catch (error: any) {
+    res.status(404).json({ error: error.message });
+  }
+};
 
+export const updateProfile = async (req: AuthRequest, res: Response) => {
+  try {
+    if (!req.user || !req.user.userId) {
+      return res.status(401).json({ error: "User not authenticated" });
+    }
+    const updatedUser = await userService.updateUserProfile(
+      req.user.userId,
+      req.body
+    );
+    res.status(200).json(updatedUser);
+  } catch (error: any) {
+    res.status(400).json({ error: error.message });
+  }
+};

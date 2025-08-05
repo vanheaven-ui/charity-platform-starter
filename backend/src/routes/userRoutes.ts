@@ -9,5 +9,6 @@ router.post("/login", userController.loginUser);
 
 // Protected route to use the protect middleware
 router.get("/profile", protect, userController.getProfile);
+router.put("/profile", protect, userController.updateProfile);
 
 export default router;

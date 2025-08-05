@@ -75,3 +75,27 @@ export const getUserById = async (id: number) => {
 
   return user;
 };
+
+export const updateUserProfile = async (
+  userId: number,
+  updateData: Prisma.UserUpdateInput
+) => {
+  // Hash password if it's included in the update data
+  if (updateData.password && typeof updateData.password === "string") {
+    const salt = await bcrypt.genSalt(10);
+    updateData.password = await bcrypt.hash(updateData.password, salt);
+  }
+
+  return prisma.user.update({
+    where: { id: userId },
+    data: updateData,
+    select: {
+      id: true,
+      name: true,
+      email: true,
+      role: true,
+      status: true,
+      preferredLanguage: true,
+    },
+  });
+};
