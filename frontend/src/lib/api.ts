@@ -64,3 +64,19 @@ export const deleteProject = async (projectId: number, token: string) => {
   });
   return response.data;
 };
+
+export const createDonation = async (donationData: any, token: string) => {
+  const response = await axios.post(`${API_URL}/donations`, donationData, {
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+  });
+  return response.data;
+};
+
+export const getMyDonations = async (token: string) => {
+  const response = await axios.get(`${API_URL}/donations`, {
+    headers: { Authorization: `Bearer ${token}` },
+  });
+  return response.data;
+};
