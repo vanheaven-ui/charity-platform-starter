@@ -18,10 +18,11 @@ export default function Projects() {
   const [loading, setLoading] = useState(true);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [selectedProject, setSelectedProject] = useState<Project | null>(null);
+  const [searchTerm, setSearchTerm] = useState("");
 
-  const fetchProjects = async () => {
+  const fetchProjects = async (search?: string) => {
     try {
-      const data = await getProjects();
+      const data = await getProjects(search);
       setProjects(data);
       setLoading(false);
     } catch (error) {
@@ -31,8 +32,8 @@ export default function Projects() {
   };
 
   useEffect(() => {
-    fetchProjects();
-  }, []);
+    fetchProjects(searchTerm);
+  }, [searchTerm]);
 
   const handleDonateClick = (project: Project) => {
     setSelectedProject(project);
@@ -56,6 +57,15 @@ export default function Projects() {
     <div className="bg-gray-100 min-h-screen p-8">
       <div className="container mx-auto bg-white p-8 rounded-lg shadow-md">
         <h1 className="text-3xl font-bold mb-6">Our Projects</h1>
+        <div className="mb-6">
+          <input
+            type="text"
+            placeholder="Search projects..."
+            value={searchTerm}
+            onChange={(e) => setSearchTerm(e.target.value)}
+            className="w-full px-4 py-2 border rounded-md"
+          />
+        </div>
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           {projects.length > 0 ? (
             projects.map((project) => (

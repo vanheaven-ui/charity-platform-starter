@@ -25,8 +25,10 @@ export const getProfile = async (token: string) => {
   return response.data;
 };
 
-export const getProjects = async () => {
-  const response = await axios.get(`${API_URL}/projects`);
+export const getProjects = async (search?: string) => {
+  const response = await axios.get(`${API_URL}/projects`, {
+    params: { search },
+  });
   return response.data;
 };
 
