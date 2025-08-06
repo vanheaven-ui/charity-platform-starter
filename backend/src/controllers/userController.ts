@@ -47,3 +47,16 @@ export const updateProfile = async (req: AuthRequest, res: Response) => {
     res.status(400).json({ error: error.message });
   }
 };
+
+export const getSignedUpEvents = async (req: AuthRequest, res: Response) => {
+  try {
+    if (!req.user || !req.user.userId) {
+      return res.status(401).json({ error: "User not authenticated" });
+    }
+    const userId = req.user.userId;
+    const events = await userService.getSignedUpEvents(userId);
+    res.status(200).json(events);
+  } catch (error: any) {
+    res.status(500).json({ error: error.message });
+  }
+};

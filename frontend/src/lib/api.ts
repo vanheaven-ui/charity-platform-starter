@@ -177,3 +177,12 @@ export const getVolunteersForEvent = async (eventId: number, token: string) => {
   });
   return response.data;
 };
+
+export const getSignedUpEvents = async (token: string) => {
+  const response = await axios.get(`${API_URL}/users/signed-up-events`, {
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+  });
+  return response.data;
+};

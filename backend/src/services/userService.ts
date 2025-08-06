@@ -1,6 +1,7 @@
 import { PrismaClient, Prisma } from "@prisma/client";
 import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
+import type { Event as PrismaEvent } from '@prisma/client';
 
 const prisma = new PrismaClient();
 const saltRounds = 10; // For password hashing
@@ -98,4 +99,20 @@ export const updateUserProfile = async (
       preferredLanguage: true,
     },
   });
+};
+
+export const getSignedUpEvents = async (userId: number): Promise<PrismaEvent[]> => {
+  const userSignups = await prisma.eventSignup.findMany({
+    where: { userId },
+    select: {
+      event: true,
+    },
+    orderBy: {
+      event: {
+        eventDate: 'asc',
+      },
+    },
+  });
+
+  return userSignups.map((signup) => signup.event);
 };
