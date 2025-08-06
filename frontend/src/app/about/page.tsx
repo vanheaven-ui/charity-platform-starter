@@ -1,7 +1,7 @@
 export default function About() {
   return (
-    <div className="bg-gray-100 min-h-screen p-8">
-      <div className="container mx-auto bg-white p-8 rounded-lg shadow-md">
+    <div className="min-h-screen p-8">
+      <div className="container mx-auto p-8 rounded-lg shadow-md">
         <h1 className="text-3xl font-bold mb-4">About Our Charity</h1>
         <p className="text-gray-700 leading-relaxed">
           The Charity Platform Starter is designed to be a foundational template

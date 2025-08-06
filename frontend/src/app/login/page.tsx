@@ -3,6 +3,7 @@ import { useState } from "react";
 import { loginUser } from "../../lib/api";
 import { useRouter } from "next/navigation";
 import { useAuth } from "../../context/AuthContext";
+import { Button } from "@/components/Button";
 
 export default function Login() {
   const router = useRouter();
@@ -11,6 +12,8 @@ export default function Login() {
     email: "",
     password: "",
   });
+  const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
@@ -18,20 +21,34 @@ export default function Login() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    setIsLoading(true);
+    setError(null);
     try {
       const res = await loginUser(formData);
       login(res.token);
       router.push("/dashboard");
-    } catch (error) {
-      console.error("Login failed:", error);
+    } catch (err: any) {
+      if (err.response && err.response.data && err.response.data.error) {
+        setError(err.response.data.error);
+      } else {
+        setError("An unexpected error occurred. Please try again.");
+      }
+      console.error("Login failed:", err);
+    } finally {
+      setIsLoading(false);
     }
   };
 
   return (
-    <div className="flex items-center justify-center min-h-screen bg-gray-100">
+    <div className="flex items-center justify-center min-h-screen">
       <div className="w-full max-w-md p-8 space-y-6 bg-white rounded-lg shadow-md">
         <h2 className="text-2xl font-bold text-center">Login</h2>
         <form onSubmit={handleSubmit} className="space-y-4">
+          {error && (
+            <div className="p-3 text-sm text-red-700 bg-red-100 rounded-md">
+              {error}
+            </div>
+          )}
           <input
             type="email"
             name="email"
@@ -48,12 +65,9 @@ export default function Login() {
             onChange={handleChange}
             className="w-full px-4 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
           />
-          <button
-            type="submit"
-            className="w-full px-4 py-2 font-bold text-white bg-blue-600 rounded-md hover:bg-blue-700"
-          >
+          <Button type="submit" isLoading={isLoading} className="w-full">
             Login
-          </button>
+          </Button>
         </form>
       </div>
     </div>

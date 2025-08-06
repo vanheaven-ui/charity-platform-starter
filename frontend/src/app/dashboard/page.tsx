@@ -1,15 +1,22 @@
+// app/dashboard/page.tsx
 "use client";
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { useAuth } from "../../context/AuthContext";
 import Link from "next/link";
-import { getDonationsByProject, getProjects } from "../../lib/api";
-import { Bar } from "react-chartjs-2";
+import {
+  getDonationsByProject,
+  getMonthlyDonations,
+  getProjects,
+} from "../../lib/api";
+import { Bar, Line } from "react-chartjs-2";
 import {
   Chart as ChartJS,
   CategoryScale,
   LinearScale,
   BarElement,
+  PointElement,
+  LineElement,
   Title,
   Tooltip,
   Legend,
@@ -20,6 +27,8 @@ ChartJS.register(
   CategoryScale,
   LinearScale,
   BarElement,
+  PointElement,
+  LineElement,
   Title,
   Tooltip,
   Legend
@@ -37,12 +46,20 @@ interface ChartDataPoint {
   };
 }
 
+interface MonthlyDonation {
+  month: string;
+  totalAmount: number;
+}
+
 export default function Dashboard() {
   const { user, loading } = useAuth();
   const router = useRouter();
   const [donationsByProject, setDonationsByProject] = useState<
     ChartDataPoint[]
   >([]);
+  const [monthlyDonations, setMonthlyDonations] = useState<MonthlyDonation[]>(
+    []
+  );
   const [projects, setProjects] = useState<Project[]>([]);
 
   useEffect(() => {
@@ -50,18 +67,26 @@ export default function Dashboard() {
       router.push("/login");
     }
 
-    if (user && user.role === "Admin") {
+    if (user) {
       const fetchData = async () => {
         try {
           const token = localStorage.getItem("token");
           if (token) {
-            // Fetch projects to get their names
-            const allProjects = await getProjects();
-            setProjects(allProjects);
+            const [allProjects, projectsData, monthlyData] = await Promise.all([
+              getProjects(),
+              getDonationsByProject(token),
+              getMonthlyDonations(token),
+            ]);
 
-            // Fetch dashboard data
-            const data = await getDonationsByProject(token);
-            setDonationsByProject(data);
+            // Log the raw data to the browser console for debugging
+            console.log("Fetched Projects:", allProjects);
+            console.log("Fetched Donations by Project:", projectsData);
+            console.log("Fetched Monthly Donations:", monthlyData);
+
+            // Set states with the fetched data
+            setProjects(allProjects);
+            setDonationsByProject(projectsData);
+            setMonthlyDonations(monthlyData);
           }
         } catch (error) {
           console.error("Failed to fetch dashboard data:", error);
@@ -79,13 +104,13 @@ export default function Dashboard() {
     );
   }
 
-  // Map project IDs to names for the chart labels
+  // Bar Chart Data & Options
   const getProjectName = (projectId: number) => {
     const project = projects.find((p) => p.id === projectId);
     return project ? project.name : `Project ${projectId}`;
   };
 
-  const chartData = {
+  const barChartData = {
     labels: donationsByProject.map((d) => getProjectName(d.projectId)),
     datasets: [
       {
@@ -98,7 +123,23 @@ export default function Dashboard() {
     ],
   };
 
-  const chartOptions = {
+  // Line Chart Data & Options
+  const lineChartData = {
+    labels: monthlyDonations.map((d) => d.month),
+    datasets: [
+      {
+        label: "Monthly Donations ($)",
+        data: monthlyDonations.map((d) => d.totalAmount),
+        fill: true,
+        borderColor: "rgb(234, 179, 8)", // Tailwind yellow-500
+        backgroundColor: "rgba(234, 179, 8, 0.2)",
+        tension: 0.1,
+      },
+    ],
+  };
+
+  const barChartOptions = {
+    // ... (same as before) ...
     responsive: true,
     plugins: {
       legend: {
@@ -110,36 +151,44 @@ export default function Dashboard() {
       },
     },
     scales: {
-      y: {
-        beginAtZero: true,
-        title: {
-          display: true,
-          text: "Amount ($)",
-        },
+      y: { beginAtZero: true },
+    },
+  };
+
+  const lineChartOptions = {
+    // ... (same as before) ...
+    responsive: true,
+    plugins: {
+      legend: {
+        position: "top" as const,
       },
-      x: {
-        title: {
-          display: true,
-          text: "Project",
-        },
+      title: {
+        display: true,
+        text: "Donations Over Time",
       },
+    },
+    scales: {
+      y: { beginAtZero: true },
     },
   };
 
   return (
-    <div className="bg-gray-100 min-h-screen p-8">
-      <div className="container mx-auto bg-white p-8 rounded-lg shadow-md">
+    <div className="min-h-screen p-8">
+      <div className="container mx-auto p-8 rounded-lg shadow-md">
         <h1 className="text-3xl font-bold mb-4">Welcome, {user.name}!</h1>
         <p className="text-gray-600 mb-6">This is your personal dashboard.</p>
 
-        {user.role === "Admin" && (
-          <div className="mt-8">
-            <h2 className="text-2xl font-bold mb-4">Admin Overview</h2>
+        <div className="mt-8">
+          <h2 className="text-2xl font-bold mb-4">Donation Statistics</h2>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
             <div className="bg-white p-6 rounded-lg shadow-lg">
-              <Bar options={chartOptions} data={chartData} />
+              <Bar options={barChartOptions} data={barChartData} />
+            </div>
+            <div className="bg-white p-6 rounded-lg shadow-lg">
+              <Line options={lineChartOptions} data={lineChartData} />
             </div>
           </div>
-        )}
+        </div>
 
         <div className="mt-8 grid grid-cols-1 md:grid-cols-2 gap-6">
           <Link

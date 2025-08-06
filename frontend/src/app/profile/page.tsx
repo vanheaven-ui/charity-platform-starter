@@ -70,7 +70,7 @@ export default function Profile() {
   }
 
   return (
-    <div className="bg-gray-100 min-h-screen p-8">
+    <div className="min-h-screen p-8">
       <div className="container mx-auto bg-white p-8 rounded-lg shadow-md">
         <div className="flex justify-between items-center mb-6">
           <h1 className="text-3xl font-bold">My Profile</h1>

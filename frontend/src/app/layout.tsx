@@ -1,30 +1,24 @@
-import type { Metadata } from "next";
-import { Inter } from "next/font/google";
+"use client";
+import { ReactNode } from "react";
 import "./globals.css";
+import { Inter } from "next/font/google";
 import Navbar from "../components/Navbar";
-import { AuthProvider } from "@/context/AuthContext";
-import BackgroundParticles from "@/components/BakckgroundParticles";
+import { AuthProvider } from "../context/AuthContext";
+import BackgroundSVG from "../components/backgroundSVG";
 
 const inter = Inter({ subsets: ["latin"] });
 
-export const metadata: Metadata = {
-  title: "Charity Platform Starter",
-  description: "A template for NGO and charity organizations",
-};
-
-export default function RootLayout({
-  children,
-}: {
-  children: React.ReactNode;
-}) {
+export default function RootLayout({ children }: { children: ReactNode }) {
   return (
     <html lang="en">
       <body className={inter.className}>
         <div className="relative bg-gray-100 min-h-screen overflow-hidden">
-          <BackgroundParticles />
+          <BackgroundSVG />
           <AuthProvider>
-            <Navbar />
-            <div className="relative z-10 pt-16">{children}</div>
+            <div className="relative z-10">
+              <Navbar />
+              {children}
+            </div>
           </AuthProvider>
         </div>
       </body>

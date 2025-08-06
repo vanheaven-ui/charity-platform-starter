@@ -103,3 +103,12 @@ export const getDonationsByProject = async (token: string) => {
   );
   return response.data;
 };
+
+export const getMonthlyDonations = async (token: string) => {
+  const response = await axios.get(`${API_URL}/dashboard/monthly-donations`, {
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+  });
+  return response.data;
+};
