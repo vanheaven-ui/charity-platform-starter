@@ -1,10 +1,11 @@
+// prisma/schema.prisma
 generator client {
   provider = "prisma-client-js"
 }
 
 datasource db {
   provider = "postgresql"
-  url = env("DATABASE_URL")
+  url      = env("DATABASE_URL")
 }
 
 enum Role {
@@ -19,15 +20,17 @@ enum Role {
 }
 
 model User {
-  id               Int     @id @default(autoincrement())
-  name             String
-  email            String  @unique
-  password         String
-  role             Role    @default(Donor)
-  status           String
+  id                Int           @id @default(autoincrement())
+  name              String
+  email             String        @unique
+  password          String
+  role              Role          @default(Donor)
+  status            String
   preferredLanguage String
+  deviceToken       String?       // New field for mobile push notifications
   donations         Donation[]
   eventSignups      EventSignup[]
+  proposals         PartnerProposal[]
 }
 
 model Project {
@@ -43,15 +46,15 @@ model Project {
 }
 
 model Donation {
-  id         Int      @id @default(autoincrement())
-  amount     Int
-  message    String?
-  donorId    Int
-  projectId  Int
-  createdAt  DateTime @default(now())
-  updatedAt  DateTime @updatedAt
-  donor      User     @relation(fields: [donorId], references: [id])
-  project    Project  @relation(fields: [projectId], references: [id])
+  id        Int      @id @default(autoincrement())
+  amount    Int
+  message   String?
+  donorId   Int
+  projectId Int
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  donor     User     @relation(fields: [donorId], references: [id])
+  project   Project  @relation(fields: [projectId], references: [id])
 }
 
 enum Status {
@@ -61,26 +64,43 @@ enum Status {
 }
 
 model Event {
-  id              Int           @id @default(autoincrement())
-  title           String
-  description     String
-  locationName    String
-  locationLat     Float
-  locationLng     Float
-  eventDate       DateTime
-  isActive        Boolean       @default(true)
-  createdAt       DateTime      @default(now())
-  updatedAt       DateTime      @updatedAt
-  eventSignups    EventSignup[]
+  id            Int           @id @default(autoincrement())
+  title         String
+  description   String
+  locationName  String
+  locationLat   Float
+  locationLng   Float
+  eventDate     DateTime
+  isActive      Boolean       @default(true)
+  createdAt     DateTime      @default(now())
+  updatedAt     DateTime      @updatedAt
+  eventSignups  EventSignup[]
 }
 
 model EventSignup {
-  id              Int      @id @default(autoincrement())
-  event           Event    @relation(fields: [eventId], references: [id])
-  eventId         Int
-  user            User     @relation(fields: [userId], references: [id])
-  userId          Int
-  signupDate      DateTime @default(now())
+  id         Int      @id @default(autoincrement())
+  event      Event    @relation(fields: [eventId], references: [id])
+  eventId    Int
+  user       User     @relation(fields: [userId], references: [id])
+  userId     Int
+  signupDate DateTime @default(now())
 
-  @@unique([eventId, userId]) // Ensures a user can only sign up for an event once
+  @@unique([eventId, userId])
+}
+
+model PartnerProposal {
+  id        Int      @id @default(autoincrement())
+  title     String
+  description String
+  status    ProposalStatus @default(Pending)
+  partnerId Int
+  partner   User     @relation(fields: [partnerId], references: [id])
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+enum ProposalStatus {
+  Pending
+  Approved
+  Rejected
 }
