@@ -1,8 +1,9 @@
+// app/page.tsx
 "use client";
 import { useRouter } from "next/navigation";
 import { Button } from "../components/Button";
 import Link from "next/link";
-import Image from "next/image";
+import Image from "next/image"; // Keep Image import if you plan to use it elsewhere or for future additions
 
 export default function Home() {
   const router = useRouter();
@@ -13,6 +14,7 @@ export default function Home() {
 
   return (
     <main>
+      {/* Hero Section */}
       <section className="relative flex flex-col items-center justify-center min-h-screen py-16 text-center text-white bg-slate-900 overflow-hidden">
         <div className="absolute inset-0 bg-gradient-to-br from-blue-700 via-purple-600 to-pink-500 opacity-60"></div>
         <div className="relative container mx-auto p-8 z-10">
@@ -25,26 +27,26 @@ export default function Home() {
           </p>
           <Button
             onClick={handleDonateClick}
-            className="hover:bg-gray-200 font-bold py-3 px-8 rounded-full shadow-lg transition-transform transform hover:scale-105 animate-fadeInUp delay-200"
+            variant="primary"
+            size="lg"
+            className="shadow-lg animate-fadeInUp delay-200"
           >
             Explore Projects
           </Button>
         </div>
       </section>
 
+      {/* The "Journey of Your Impact" section with gradients */}
       <section className="py-24 bg-white text-gray-800">
         <div className="container mx-auto px-8">
           <h3 className="text-4xl font-bold text-center mb-16">
             The Journey of Your Impact
           </h3>
           <div className="grid grid-cols-1 lg:grid-cols-2 items-center gap-16 lg:gap-24">
-            <div className="relative h-64 lg:h-96 w-full rounded-3xl shadow-xl overflow-hidden transform lg:-rotate-3 transition-transform hover:rotate-0">
-              <Image
-                src="/images/how-it-works-1.jpg"
-                alt="Discover Projects"
-                layout="fill"
-                objectFit="cover"
-              />
+            {/* Step 01 */}
+            <div className="h-64 lg:h-96 w-full rounded-3xl shadow-xl overflow-hidden transform lg:-rotate-3 transition-transform hover:rotate-0">
+              {/* Gradient for image replacement */}
+              <div className="w-full h-full bg-gradient-to-br from-blue-500 to-purple-600"></div>
             </div>
             <div className="p-6">
               <span className="text-6xl font-extrabold text-blue-500 block mb-4">
@@ -61,6 +63,7 @@ export default function Home() {
             </div>
           </div>
 
+          {/* Step 02 */}
           <div className="grid grid-cols-1 lg:grid-cols-2 items-center gap-16 lg:gap-24 mt-24">
             <div className="order-2 lg:order-1 p-6">
               <span className="text-6xl font-extrabold text-purple-500 block mb-4">
@@ -75,24 +78,17 @@ export default function Home() {
                 transaction.
               </p>
             </div>
-            <div className="order-1 lg:order-2 relative h-64 lg:h-96 w-full rounded-3xl shadow-xl overflow-hidden transform lg:rotate-3 transition-transform hover:rotate-0">
-              <Image
-                src="/images/how-it-works-2.jpg"
-                alt="Make a Donation"
-                layout="fill"
-                objectFit="cover"
-              />
+            <div className="order-1 lg:order-2 h-64 lg:h-96 w-full rounded-3xl shadow-xl overflow-hidden transform lg:rotate-3 transition-transform hover:rotate-0">
+              {/* Gradient for image replacement */}
+              <div className="w-full h-full bg-gradient-to-br from-purple-500 to-pink-600"></div>
             </div>
           </div>
 
+          {/* Step 03 */}
           <div className="grid grid-cols-1 lg:grid-cols-2 items-center gap-16 lg:gap-24 mt-24">
-            <div className="relative h-64 lg:h-96 w-full rounded-3xl shadow-xl overflow-hidden transform lg:-rotate-3 transition-transform hover:rotate-0">
-              <Image
-                src="/images/how-it-works-3.jpg"
-                alt="Track Impact"
-                layout="fill"
-                objectFit="cover"
-              />
+            <div className="h-64 lg:h-96 w-full rounded-3xl shadow-xl overflow-hidden transform lg:-rotate-3 transition-transform hover:rotate-0">
+              {/* Gradient for image replacement */}
+              <div className="w-full h-full bg-gradient-to-br from-pink-500 to-red-600"></div>
             </div>
             <div className="p-6">
               <span className="text-6xl font-extrabold text-pink-500 block mb-4">
@@ -111,25 +107,61 @@ export default function Home() {
         </div>
       </section>
 
+      {/* The "Give Your Time, Make a Difference" section with a gradient */}
       <section className="py-24 bg-gray-100 text-gray-800">
+        <div className="container mx-auto px-8">
+          <h3 className="text-4xl font-bold text-center mb-16">
+            Give Your Time, Make a Difference
+          </h3>
+          <div className="grid grid-cols-1 lg:grid-cols-2 items-center gap-16 lg:gap-24">
+            <div className="p-6 order-2 lg:order-1">
+              <span className="text-6xl font-extrabold text-teal-500 block mb-4">
+                04
+              </span>
+              <h4 className="text-3xl font-semibold mb-3">
+                Explore Volunteering Events
+              </h4>
+              <p className="text-lg text-gray-600">
+                From community clean-ups to mentorship programs, our events are
+                where impact happens. Find an event that fits your skills and
+                schedule, and join a team of passionate volunteers.
+              </p>
+            </div>
+            <div className="order-1 lg:order-2 h-64 lg:h-96 w-full rounded-3xl shadow-xl overflow-hidden transform lg:rotate-3 transition-transform hover:rotate-0">
+              {/* Gradient for image replacement */}
+              <div className="w-full h-full bg-gradient-to-br from-yellow-500 to-green-600"></div>
+            </div>
+          </div>
+          <div className="flex justify-center mt-12">
+            <Link href="/events" passHref legacyBehavior>
+              <Button variant="primary" size="lg">
+                Explore Volunteering Events
+              </Button>
+            </Link>
+          </div>
+        </div>
+      </section>
+
+      {/* The "Numbers Tell Our Story" section */}
+      <section className="py-24 bg-white text-gray-800">
         <div className="container mx-auto px-8">
           <h3 className="text-4xl font-bold text-center mb-16">
             The Numbers Tell Our Story
           </h3>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8 text-center">
-            <div className="p-10 bg-white rounded-3xl shadow-lg transition-transform transform hover:scale-105">
+            <div className="p-10 bg-gray-100 rounded-3xl shadow-lg transition-transform transform hover:scale-105">
               <h4 className="text-5xl md:text-6xl font-extrabold text-green-600 mb-2">
                 15+
               </h4>
               <p className="text-xl text-gray-600">Projects Funded</p>
             </div>
-            <div className="p-10 bg-white rounded-3xl shadow-lg transition-transform transform hover:scale-105">
+            <div className="p-10 bg-gray-100 rounded-3xl shadow-lg transition-transform transform hover:scale-105">
               <h4 className="text-5xl md:text-6xl font-extrabold text-green-600 mb-2">
                 500+
               </h4>
               <p className="text-xl text-gray-600">Dedicated Donors</p>
             </div>
-            <div className="p-10 bg-white rounded-3xl shadow-lg transition-transform transform hover:scale-105">
+            <div className="p-10 bg-gray-100 rounded-3xl shadow-lg transition-transform transform hover:scale-105">
               <h4 className="text-5xl md:text-6xl font-extrabold text-green-600 mb-2">
                 $50K+
               </h4>
@@ -139,6 +171,7 @@ export default function Home() {
         </div>
       </section>
 
+      {/* Final Call to Action section with correctly styled buttons */}
       <section className="py-24 bg-blue-600 text-white text-center">
         <div className="container mx-auto px-8">
           <h3 className="text-4xl font-bold mb-4">
@@ -147,12 +180,23 @@ export default function Home() {
           <p className="text-lg mb-8 max-w-3xl mx-auto">
             Ready to be a part of the change? Your journey begins here.
           </p>
-          <Button
-            onClick={handleDonateClick}
-            className="by-white-600 text-blue-600 hover:bg-gray-200 font-bold py-3 px-8 rounded-full"
-          >
-            Start Donating
-          </Button>
+          <div className="flex justify-center space-x-4">
+            <Link href="/projects" passHref legacyBehavior>
+              <Button variant="primary" size="lg">
+                Start Donating
+              </Button>
+            </Link>
+            <Link href="/events" passHref legacyBehavior>
+              <Button
+                variant="outline"
+                size="lg"
+                // The following classes ensure it's white with a blue border, contrasting against the blue section background
+                className="bg-white text-blue-600 border-2 border-white hover:bg-gray-200"
+              >
+                Start Volunteering
+              </Button>
+            </Link>
+          </div>
         </div>
       </section>
     </main>

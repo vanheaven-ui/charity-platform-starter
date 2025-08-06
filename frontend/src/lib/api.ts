@@ -112,3 +112,68 @@ export const getMonthlyDonations = async (token: string) => {
   });
   return response.data;
 };
+
+export const getAllEvents = async (search?: string) => {
+  const response = await axios.get(`${API_URL}/events`, {
+    params: { search },
+  });
+  return response.data;
+};
+
+export const getEventById = async (eventId: number) => {
+  const response = await axios.get(`${API_URL}/events/${eventId}`);
+  return response.data;
+};
+
+export const signUpForEvent = async (eventId: number, token: string) => {
+  const response = await axios.post(
+    `${API_URL}/events/${eventId}/signup`,
+    {}, // No body needed for this POST request
+    {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    }
+  );
+  return response.data;
+};
+
+export const createEvent = async (eventData: any, token: string) => {
+  const response = await axios.post(`${API_URL}/events`, eventData, {
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+  });
+  return response.data;
+};
+
+export const updateEvent = async (
+  eventId: number,
+  eventData: any,
+  token: string
+) => {
+  const response = await axios.put(`${API_URL}/events/${eventId}`, eventData, {
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+  });
+  return response.data;
+};
+
+export const deleteEvent = async (eventId: number, token: string) => {
+  const response = await axios.delete(`${API_URL}/events/${eventId}`, {
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+  });
+  return response.data;
+};
+
+export const getVolunteersForEvent = async (eventId: number, token: string) => {
+  const response = await axios.get(`${API_URL}/events/${eventId}/volunteers`, {
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+  });
+  return response.data;
+};
