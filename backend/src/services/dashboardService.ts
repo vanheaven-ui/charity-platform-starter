@@ -17,10 +17,11 @@ export const getDonationsByProject = async () => {
 };
 
 export const getMonthlyDonations = async () => {
+  // Corrected raw query for PostgreSQL
   return prisma.$queryRaw`
     SELECT
-      strftime('%Y-%m', "createdAt") AS month,
-      SUM(amount) AS totalAmount
+      to_char("createdAt", 'YYYY-MM') AS month,
+      CAST(SUM(amount) AS REAL) AS "totalAmount"
     FROM "Donation"
     GROUP BY month
     ORDER BY month ASC;
