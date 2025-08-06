@@ -31,7 +31,7 @@ export default function Navbar() {
         window.removeEventListener("scroll", handleScroll);
       };
     } else {
-      setScrolled(true);
+      setScrolled(true); // Always show solid background on non-homepage
     }
   }, [scrolled, isHomePage]);
 
@@ -42,10 +42,11 @@ export default function Navbar() {
 
   const toggleMenu = () => {
     setIsOpen(!isOpen);
-    setIsTooltipVisible(false);
+    setIsTooltipVisible(false); // Hide tooltip when menu is toggled
   };
 
-  const navItems = (
+  // Define common navigation items visible to all users
+  const commonNavItems = (
     <>
       <li>
         <Link
@@ -74,47 +75,50 @@ export default function Navbar() {
           Projects
         </Link>
       </li>
-      {user ? (
-        <>
-          <li>
-            <Link
-              href="/dashboard"
-              onClick={() => setIsOpen(false)}
-              className="hover:text-pink-500 transition-colors"
-            >
-              Dashboard
-            </Link>
-          </li>
-          <li>
-            <Link
-              href="/profile"
-              onClick={() => setIsOpen(false)}
-              className="hover:text-pink-500 transition-colors"
-            >
-              Profile
-            </Link>
-          </li>
-          <li>
-            <Link
-              href="/my-donations"
-              onClick={() => setIsOpen(false)}
-              className="hover:text-pink-500 transition-colors"
-            >
-              My Donations
-            </Link>
-          </li>
-          {user.role === "Admin" && (
+    </>
+  );
+
+  // Define navigation items for any logged-in user
+  const authenticatedNavItems = (
+    <>
+      <li>
+        <Link
+          href="/dashboard"
+          onClick={() => setIsOpen(false)}
+          className="hover:text-pink-500 transition-colors"
+        >
+          Dashboard
+        </Link>
+      </li>
+      <li>
+        <Link
+          href="/profile"
+          onClick={() => setIsOpen(false)}
+          className="hover:text-pink-500 transition-colors"
+        >
+          Profile
+        </Link>
+      </li>
+    </>
+  );
+
+  // Define role-specific navigation items
+  const roleSpecificNavItems = () => {
+    if (!user) return null; // Only render if user is logged in
+
+    switch (user.role) {
+      case "Admin":
+        return (
+          <>
             <li>
               <Link
-                href="/admin/events/"
+                href="/admin/events"
                 onClick={() => setIsOpen(false)}
                 className="hover:text-pink-500 transition-colors"
               >
                 Manage Events
               </Link>
             </li>
-          )}
-          {user.role === "Admin" && (
             <li>
               <Link
                 href="/admin/projects"
@@ -124,38 +128,121 @@ export default function Navbar() {
                 Manage Projects
               </Link>
             </li>
-          )}
-          <li>
-            <Button
-              onClick={handleLogout}
-              className="bg-red-500 text-white hover:bg-red-600 font-normal py-1 px-3 rounded-lg"
-            >
-              Logout
-            </Button>
-          </li>
-        </>
-      ) : (
-        <>
+            <li>
+              <Link
+                href="/admin/users" // Link to a future user management page
+                onClick={() => setIsOpen(false)}
+                className="hover:text-pink-500 transition-colors"
+              >
+                Manage Users
+              </Link>
+            </li>
+            <li>
+              <Link
+                href="/admin/proposals" // Link for admin to manage partner proposals
+                onClick={() => setIsOpen(false)}
+                className="hover:text-pink-500 transition-colors"
+              >
+                Manage Proposals
+              </Link>
+            </li>
+          </>
+        );
+      case "Donor":
+        return (
           <li>
             <Link
-              href="/login"
+              href="/my-donations"
               onClick={() => setIsOpen(false)}
               className="hover:text-pink-500 transition-colors"
             >
-              Login
+              My Donations
             </Link>
           </li>
+        );
+      case "Volunteer":
+        return (
           <li>
             <Link
-              href="/register"
+              href="/dashboard" // Volunteer dashboard shows signed up events
               onClick={() => setIsOpen(false)}
               className="hover:text-pink-500 transition-colors"
             >
-              Register
+              My Volunteering
             </Link>
           </li>
-        </>
-      )}
+        );
+      case "Partner":
+        return (
+          <li>
+            <Link
+              href="/dashboard" // Partner dashboard shows proposals
+              onClick={() => setIsOpen(false)}
+              className="hover:text-pink-500 transition-colors"
+            >
+              My Partnerships
+            </Link>
+          </li>
+        );
+      case "Beneficiary":
+        return (
+          <li>
+            <Link
+              href="/dashboard" // Beneficiary dashboard shows relevant info
+              onClick={() => setIsOpen(false)}
+              className="hover:text-pink-500 transition-colors"
+            >
+              My Support
+            </Link>
+          </li>
+        );
+      case "Member":
+        return (
+          <li>
+            <Link
+              href="/dashboard" // Member dashboard can show membership status
+              onClick={() => setIsOpen(false)}
+              className="hover:text-pink-500 transition-colors"
+            >
+              My Membership
+            </Link>
+          </li>
+        );
+      default:
+        return null; // For 'User' role or any other non-specific role
+    }
+  };
+
+  // Authentication buttons (Login/Register or Logout)
+  const authButtons = user ? (
+    <li>
+      <Button
+        onClick={handleLogout}
+        className="bg-red-500 text-white hover:bg-red-600 font-normal py-1 px-3 rounded-lg"
+      >
+        Logout
+      </Button>
+    </li>
+  ) : (
+    <>
+      <li>
+        <Link
+          href="/login"
+          onClick={() => setIsOpen(false)}
+          className="hover:text-pink-500 transition-colors"
+        >
+          Login
+        </Link>
+      </li>
+      <li>
+        <Link
+          href="/register"
+          onClick={() => setIsOpen(false)}
+          className="hover:text-pink-500 transition-colors"
+        >
+          Register
+        </Link>
+      </li>
     </>
   );
 
@@ -184,7 +271,10 @@ export default function Navbar() {
 
         {/* Desktop Menu */}
         <ul className="hidden md:flex space-x-6 items-center text-white">
-          {navItems}
+          {commonNavItems}
+          {user && authenticatedNavItems} {/* Show these only if logged in */}
+          {roleSpecificNavItems()} {/* Show role-specific links */}
+          {authButtons}
         </ul>
 
         {/* Mobile Menu Button with Circular Text Icon and Tooltip */}
@@ -234,7 +324,10 @@ export default function Navbar() {
             </button>
           </div>
           <ul className="flex flex-col items-center space-y-6 text-white text-xl p-8">
-            {navItems}
+            {commonNavItems}
+            {user && authenticatedNavItems}
+            {roleSpecificNavItems()}
+            {authButtons}
           </ul>
         </div>
       </div>

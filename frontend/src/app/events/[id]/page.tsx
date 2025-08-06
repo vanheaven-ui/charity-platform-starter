@@ -1,12 +1,11 @@
-// app/events/[id]/page.tsx
 "use client";
 import { useState, useEffect } from "react";
 import { useParams, useRouter } from "next/navigation";
-import { getEventById, signUpForEvent } from "@/lib/api"; // Adjust import path
-import { useAuth } from "@/context/AuthContext"; // Adjust import path
+import { getEventById, signUpForEvent } from "@/lib/api"; 
+import { useAuth } from "@/context/AuthContext"; 
 import { format } from "date-fns";
-import { Button } from "@/components/Button"; // Reusable Button component
-import { GoogleMapComponent } from "@/components/GoogleMapComponent"; // Create this component next
+import { Button } from "@/components/Button"; 
+import { GoogleMapComponent } from "@/components/GoogleMapComponent"; 
 import Link from "next/link";
 
 interface Event {
@@ -72,7 +71,8 @@ export default function EventDetailPage() {
     }
   };
 
-  if (loading || authLoading) { // Added authLoading to ensure user state is ready
+  if (loading || authLoading) {
+    // Added authLoading to ensure user state is ready
     return (
       <div className="min-h-screen flex items-center justify-center pt-24 bg-gray-50">
         <p className="text-gray-600 text-lg">Loading event details...</p>
@@ -149,10 +149,13 @@ export default function EventDetailPage() {
                 >
                   Sign Up for Event
                 </Button>
-              ) : ( // They are logged in, but not a volunteer
+              ) : (
+                // They are logged in, but not a volunteer
                 <div className="text-center md:text-left p-4 bg-blue-50 rounded-lg border border-blue-100">
                   <p className="text-gray-700 mb-4">
-                    You are currently logged in as a **{user.role}**. To sign up for events and contribute your time, please update your role to 'Volunteer' in your profile.
+                    You are currently logged in as a **{user.role}**. To sign up
+                    for events and contribute your time, please update your role
+                    to 'Volunteer' in your profile.
                   </p>
                   <Link href="/profile" passHref legacyBehavior>
                     <Button variant="secondary" size="md">
@@ -161,15 +164,23 @@ export default function EventDetailPage() {
                   </Link>
                 </div>
               )
-            ) : ( // User is not logged in
+            ) : (
+              // User is not logged in
               <div className="text-center md:text-left p-4 bg-gray-50 rounded-lg border border-gray-100">
                 <p className="text-gray-700 mb-4">
                   Please{" "}
-                  <Link href="/login" className="text-blue-600 hover:underline font-semibold">
+                  <Link
+                    href="/login"
+                    className="text-blue-600 hover:underline font-semibold"
+                  >
                     log in
                   </Link>{" "}
-                  to sign up for this event. If you don't have an account, you can{" "}
-                  <Link href="/register" className="text-blue-600 hover:underline font-semibold">
+                  to sign up for this event. If you don't have an account, you
+                  can{" "}
+                  <Link
+                    href="/register"
+                    className="text-blue-600 hover:underline font-semibold"
+                  >
                     register here
                   </Link>
                   .

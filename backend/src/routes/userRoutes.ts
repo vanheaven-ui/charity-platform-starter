@@ -11,4 +11,6 @@ router.post("/login", userController.loginUser);
 router.get("/profile", protect, userController.getProfile);
 router.put("/profile", protect, userController.updateProfile);
 
+router.get("/signed-up-events", protect, userController.getSignedUpEvents);
+
 export default router;
