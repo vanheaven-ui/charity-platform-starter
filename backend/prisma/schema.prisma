@@ -27,6 +27,7 @@ model User {
   status           String
   preferredLanguage String
   donations         Donation[]
+  eventSignups      EventSignup[]
 }
 
 model Project {
@@ -57,4 +58,29 @@ enum Status {
   Active
   Completed
   Cancelled
+}
+
+model Event {
+  id              Int           @id @default(autoincrement())
+  title           String
+  description     String
+  locationName    String
+  locationLat     Float
+  locationLng     Float
+  eventDate       DateTime
+  isActive        Boolean       @default(true)
+  createdAt       DateTime      @default(now())
+  updatedAt       DateTime      @updatedAt
+  eventSignups    EventSignup[]
+}
+
+model EventSignup {
+  id              Int      @id @default(autoincrement())
+  event           Event    @relation(fields: [eventId], references: [id])
+  eventId         Int
+  user            User     @relation(fields: [userId], references: [id])
+  userId          Int
+  signupDate      DateTime @default(now())
+
+  @@unique([eventId, userId]) // Ensures a user can only sign up for an event once
 }

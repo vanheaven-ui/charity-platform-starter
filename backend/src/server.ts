@@ -6,6 +6,7 @@ import userRoutes from "./routes/userRoutes";
 import projectRoutes from "./routes/projectRoutes";
 import donationRoutes from "./routes/donationRoutes";
 import dashboardRoutes from "./routes/dashboardRoutes";
+import eventRoutes from "./routes/eventRoutes";
 
 dotenv.config();
 
@@ -25,6 +26,7 @@ app.use("/api", userRoutes);
 app.use("/api/projects", projectRoutes);
 app.use("/api/donations", donationRoutes);
 app.use("/api/dashboard", dashboardRoutes);
+app.use('/api/events', eventRoutes);
 
 app.listen(port, () => {
   console.log(`Server running on port ${port}`);
