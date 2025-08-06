@@ -125,108 +125,110 @@ export default function AdminProjects() {
   }
 
   return (
-    <div className="min-h-screen p-8">
-      <div className="container mx-auto bg-white p-8 rounded-lg shadow-md">
-        <h1 className="text-3xl font-bold mb-6">Manage Projects</h1>
+    <div className="pt-16">
+      <div className="min-h-screen p-8">
+        <div className="container mx-auto bg-white rounded-lg shadow-md">
+          <h1 className="text-3xl font-bold mb-6">Manage Projects</h1>
 
-        {/* Project Form */}
-        <form
-          onSubmit={handleSubmit}
-          className="mb-8 p-6 border rounded-lg bg-blue-50"
-        >
-          <h2 className="text-xl font-semibold mb-4">
-            {isEditing ? "Edit Project" : "Create New Project"}
-          </h2>
-          <div className="space-y-4">
-            <div>
-              <label className="block text-gray-700">Name</label>
-              <input
-                type="text"
-                name="name"
-                value={formData.name}
-                onChange={handleChange}
-                className="w-full px-3 py-2 border rounded-md"
-                required
-              />
-            </div>
-            <div>
-              <label className="block text-gray-700">Description</label>
-              <textarea
-                name="description"
-                value={formData.description}
-                onChange={handleChange}
-                className="w-full px-3 py-2 border rounded-md"
-                rows={4}
-                required
-              />
-            </div>
-            <div>
-              <label className="block text-gray-700">Goal ($)</label>
-              <input
-                type="number"
-                name="goal"
-                value={formData.goal}
-                onChange={handleChange}
-                className="w-full px-3 py-2 border rounded-md"
-                min="0"
-                required
-              />
-            </div>
-            <button
-              type="submit"
-              className="px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700"
-            >
-              {isEditing ? "Save Changes" : "Create Project"}
-            </button>
-            {isEditing && (
+          {/* Project Form */}
+          <form
+            onSubmit={handleSubmit}
+            className="mb-8 p-6 border rounded-lg bg-blue-50"
+          >
+            <h2 className="text-xl font-semibold mb-4">
+              {isEditing ? "Edit Project" : "Create New Project"}
+            </h2>
+            <div className="space-y-4">
+              <div>
+                <label className="block text-gray-700">Name</label>
+                <input
+                  type="text"
+                  name="name"
+                  value={formData.name}
+                  onChange={handleChange}
+                  className="w-full px-3 py-2 border rounded-md"
+                  required
+                />
+              </div>
+              <div>
+                <label className="block text-gray-700">Description</label>
+                <textarea
+                  name="description"
+                  value={formData.description}
+                  onChange={handleChange}
+                  className="w-full px-3 py-2 border rounded-md"
+                  rows={4}
+                  required
+                />
+              </div>
+              <div>
+                <label className="block text-gray-700">Goal ($)</label>
+                <input
+                  type="number"
+                  name="goal"
+                  value={formData.goal}
+                  onChange={handleChange}
+                  className="w-full px-3 py-2 border rounded-md"
+                  min="0"
+                  required
+                />
+              </div>
               <button
-                type="button"
-                onClick={() => {
-                  setIsEditing(false);
-                  setCurrentProjectId(null);
-                  setFormData({ name: "", description: "", goal: 0 });
-                }}
-                className="ml-2 px-4 py-2 bg-gray-400 text-white rounded-lg hover:bg-gray-500"
+                type="submit"
+                className="px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700"
               >
-                Cancel
+                {isEditing ? "Save Changes" : "Create Project"}
               </button>
+              {isEditing && (
+                <button
+                  type="button"
+                  onClick={() => {
+                    setIsEditing(false);
+                    setCurrentProjectId(null);
+                    setFormData({ name: "", description: "", goal: 0 });
+                  }}
+                  className="ml-2 px-4 py-2 bg-gray-400 text-white rounded-lg hover:bg-gray-500"
+                >
+                  Cancel
+                </button>
+              )}
+            </div>
+          </form>
+
+          {/* Projects List */}
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            {projects.length > 0 ? (
+              projects.map((project) => (
+                <div
+                  key={project.id}
+                  className="bg-blue-50 p-6 rounded-lg shadow-sm"
+                >
+                  <h2 className="text-xl font-semibold mb-2">{project.name}</h2>
+                  <p className="text-gray-700 mb-4">{project.description}</p>
+                  <div className="text-sm text-gray-500">
+                    <p>Goal: ${project.goal.toLocaleString()}</p>
+                    <p>Raised: ${project.raised.toLocaleString()}</p>
+                  </div>
+                  <div className="mt-4 flex space-x-2">
+                    <button
+                      onClick={() => handleEdit(project)}
+                      className="px-3 py-1 bg-blue-500 text-white rounded-lg hover:bg-blue-600"
+                    >
+                      Edit
+                    </button>
+                    <button
+                      onClick={() => handleDelete(project.id)}
+                      className="px-3 py-1 bg-red-500 text-white rounded-lg hover:bg-red-600"
+                    >
+                      Delete
+                    </button>
+                  </div>
+                </div>
+              ))
+            ) : (
+              <p className="text-gray-500">No projects found.</p>
             )}
           </div>
-        </form>
-
-        {/* Projects List */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {projects.length > 0 ? (
-            projects.map((project) => (
-              <div
-                key={project.id}
-                className="bg-blue-50 p-6 rounded-lg shadow-sm"
-              >
-                <h2 className="text-xl font-semibold mb-2">{project.name}</h2>
-                <p className="text-gray-700 mb-4">{project.description}</p>
-                <div className="text-sm text-gray-500">
-                  <p>Goal: ${project.goal.toLocaleString()}</p>
-                  <p>Raised: ${project.raised.toLocaleString()}</p>
-                </div>
-                <div className="mt-4 flex space-x-2">
-                  <button
-                    onClick={() => handleEdit(project)}
-                    className="px-3 py-1 bg-blue-500 text-white rounded-lg hover:bg-blue-600"
-                  >
-                    Edit
-                  </button>
-                  <button
-                    onClick={() => handleDelete(project.id)}
-                    className="px-3 py-1 bg-red-500 text-white rounded-lg hover:bg-red-600"
-                  >
-                    Delete
-                  </button>
-                </div>
-              </div>
-            ))
-          ) : (
-            <p className="text-gray-500">No projects found.</p>
-          )}
         </div>
       </div>
     </div>

@@ -1,7 +1,8 @@
+// components/Navbar.tsx
 "use client";
 import Link from "next/link";
 import { useAuth } from "../context/AuthContext";
-import { useRouter, usePathname } from "next/navigation"; // Import usePathname
+import { useRouter, usePathname } from "next/navigation";
 import { useState, useEffect } from "react";
 import { Button } from "./Button";
 import { CircularTextIcon } from "./CircularTextIcon";
@@ -9,17 +10,15 @@ import { CircularTextIcon } from "./CircularTextIcon";
 export default function Navbar() {
   const { user, logout } = useAuth();
   const router = useRouter();
-  const pathname = usePathname(); // Get the current pathname
+  const pathname = usePathname();
 
   const [scrolled, setScrolled] = useState(false);
   const [isOpen, setIsOpen] = useState(false);
   const [isTooltipVisible, setIsTooltipVisible] = useState(false);
 
-  // Check if the current page is the homepage
   const isHomePage = pathname === "/";
 
   useEffect(() => {
-    // Only add the scroll listener on the homepage
     if (isHomePage) {
       const handleScroll = () => {
         const isScrolled = window.scrollY > 100;
@@ -32,7 +31,6 @@ export default function Navbar() {
         window.removeEventListener("scroll", handleScroll);
       };
     } else {
-      // For other pages, the navbar is always "scrolled" (solid)
       setScrolled(true);
     }
   }, [scrolled, isHomePage]);
@@ -56,6 +54,15 @@ export default function Navbar() {
           className="hover:text-pink-500 transition-colors"
         >
           Home
+        </Link>
+      </li>
+      <li>
+        <Link
+          href="/events"
+          onClick={() => setIsOpen(false)}
+          className="hover:text-pink-500 transition-colors"
+        >
+          Events
         </Link>
       </li>
       <li>
@@ -96,6 +103,17 @@ export default function Navbar() {
               My Donations
             </Link>
           </li>
+          {user.role === "Admin" && (
+            <li>
+              <Link
+                href="/admin/events/"
+                onClick={() => setIsOpen(false)}
+                className="hover:text-pink-500 transition-colors"
+              >
+                Manage Events
+              </Link>
+            </li>
+          )}
           {user.role === "Admin" && (
             <li>
               <Link
