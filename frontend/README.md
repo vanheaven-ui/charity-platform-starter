@@ -1,36 +1,145 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Charity Platform Starter
+
+## Project Overview
+
+Welcome to the **Charity Platform Starter**! This is a robust, full-stack web application designed to serve as a foundation for building a charity and donation management system. The platform allows organizations to create and manage donation campaigns while providing a seamless and user-friendly experience for donors. 
+
+This project is built with modern web technologies, focusing on scalability, security, and ease of use.
+
+Whether you're a developer looking for a comprehensive starting point for a new project or a non-profit organization aiming to build a custom donation platform, this starter kit provides all the essential features to get you up and running quickly.
+
+---
+
+![Project Overview Screenshot](/screenshots/overview.png)
+
+## Features
+
+- **Campaign Management**  
+  Administrators can easily create, edit, and archive donation campaigns with details such as goals, descriptions, and timelines.
+
+- **User Authentication**  
+  Secure user registration and login for both donors and administrators.
+
+- **Role-Based Access Control**  
+  Differentiate between user roles, providing administrators with the necessary permissions to manage campaigns and view donor data.
+
+- **Donation Processing**  
+  A framework for handling donations, tracking transactions, and recording donor information.
+
+- **Dashboard**  
+  A central dashboard for administrators to monitor campaign progress, view donation history, and manage users.
+
+- **Responsive Design**  
+  A clean, modern, and fully responsive user interface that works seamlessly on desktop, tablet, and mobile devices.
+
+- **Mobile API Integration**  
+  Designed with a separate, dedicated mobile repository in mind, allowing for easy integration with a mobile application for on-the-go functionality.
+
+---
+
+## Technology Stack
+
+### Frontend
+
+- **Framework**: React  
+- **Styling**: Tailwind CSS  
+- **State Management**: _(e.g., React Context, Zustand, Redux) - Specify your chosen state management here._  
+- **Icons**: Lucide React  
+
+### Backend
+
+- **Framework**: _(e.g., Node.js with Express, Python with Django/Flask, Ruby on Rails) - Specify your chosen backend framework here._  
+- **Database**: _(e.g., PostgreSQL, MongoDB, MySQL) - Specify your chosen database here._  
+- **Authentication**: _(e.g., JWT, OAuth) - Specify your chosen authentication method here._
+
+---
 
 ## Getting Started
 
-First, run the development server:
+### Prerequisites
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
-```
+Before you begin, ensure you have the following installed on your machine:
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+- Node.js (v18 or higher recommended)  
+- npm or yarn  
+- Git
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+### Installation
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+1. **Clone the repository:**
 
-## Learn More
+    ```bash
+    git clone https://github.com/vanheaven-ui/charity-platform-starter.git
+    cd charity-platform-starter
+    ```
 
-To learn more about Next.js, take a look at the following resources:
+2. **Install dependencies:**
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+    ```bash
+    npm install
+    # or
+    yarn install
+    ```
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+3. **Configure environment variables:**
 
-## Deploy on Vercel
+    Create a `.env` file in the root of the project based on the `.env.example` file. You will need to fill in details such as API keys and database connection strings.
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+4. **Run the development server:**
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+    ```bash
+    npm run dev
+    # or
+    yarn dev
+    ```
+
+    The application should now be running at: [http://localhost:3000](http://localhost:3000)
+
+---
+
+## API Endpoints
+
+The backend is built as a RESTful API to communicate with the frontend and a dedicated mobile application. The server exposes the following endpoints:
+
+- `POST /api/users`: Handle user registration, login, and profile management.  
+- `GET/POST /api/projects`: Manage donation campaigns and projects.  
+- `POST /api/donations`: Process new donations and retrieve donation history.  
+- `GET /api/dashboard`: Access dashboard data and analytics.  
+- `GET/POST /api/events`: Manage and retrieve event-related information.  
+- `GET/POST /api/proposals`: Handle project proposals and their statuses.  
+- `GET/POST /api/notifications`: Manage user notifications.
+
+---
+
+## Contributing
+
+We welcome contributions! If you would like to contribute, please follow these steps:
+
+1. Fork the repository.
+2. Create a new branch:
+
+    ```bash
+    git checkout -b feature/your-feature-name
+    ```
+
+3. Make your changes and commit them:
+
+    ```bash
+    git commit -m 'feat: Add new feature'
+    ```
+
+4. Push to the branch:
+
+    ```bash
+    git push origin feature/your-feature-name
+    ```
+
+5. Create a Pull Request.
+
+Please ensure your code follows the project's coding standards.
+
+---
+
+## License
+
+This project is licensed under the **MIT License**.

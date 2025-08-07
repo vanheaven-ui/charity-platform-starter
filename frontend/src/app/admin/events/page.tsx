@@ -1,19 +1,16 @@
 "use client";
+
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { useAuth } from "@/context/AuthContext";
-import { getAllEvents, createEvent, updateEvent, deleteEvent } from "@/lib/api";
+import {
+  getAllEvents,
+  createEvent,
+  updateEvent,
+  deleteEvent,
+  type Event,
+} from "@/lib/api";
 import { format } from "date-fns";
-
-interface Event {
-  id: number;
-  title: string;
-  description: string;
-  locationName: string;
-  locationLat: number;
-  locationLng: number;
-  eventDate: string;
-}
 
 export default function AdminEventsPage() {
   const router = useRouter();
@@ -22,7 +19,6 @@ export default function AdminEventsPage() {
   const [pageLoading, setPageLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
-  // Form state for Create/Edit
   const [formData, setFormData] = useState({
     title: "",
     description: "",
@@ -38,7 +34,7 @@ export default function AdminEventsPage() {
   useEffect(() => {
     if (!authLoading && (!user || user.role !== "Admin")) {
       router.push("/");
-    } else if (user && user.role === "Admin") {
+    } else if (user?.role === "Admin") {
       fetchEvents();
     }
   }, [user, authLoading, router]);
@@ -78,7 +74,7 @@ export default function AdminEventsPage() {
 
     try {
       if (user?.token) {
-        if (isEditing && currentEventId) {
+        if (isEditing && currentEventId !== null) {
           await updateEvent(currentEventId, eventData, user.token);
           alert("Event updated successfully!");
         } else {
@@ -154,8 +150,6 @@ export default function AdminEventsPage() {
           <h1 className="text-3xl font-bold mb-6 text-gray-800">
             Manage Events
           </h1>
-
-          {/* Event Form */}
           <form
             onSubmit={handleSubmit}
             className="mb-8 p-6 border rounded-lg bg-blue-50 shadow-sm"
@@ -271,8 +265,6 @@ export default function AdminEventsPage() {
               </div>
             </div>
           </form>
-
-          {/* Events List */}
           <div className="bg-white p-8 rounded-lg shadow-md border border-gray-100">
             <h2 className="text-2xl font-bold mb-4 text-gray-700">
               Existing Events
