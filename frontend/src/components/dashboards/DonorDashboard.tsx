@@ -65,7 +65,7 @@ export default function DonorDashboard({ user }: DonorDashboardProps) {
 
       {donations.length === 0 ? (
         <p className="text-gray-600 text-lg text-center py-10">
-          You haven't made any donations yet.{" "}
+          You haven&lsquo;t made any donations yet.{" "}
           <Link href="/projects" className="text-blue-600 hover:underline">
             Explore projects
           </Link>{" "}

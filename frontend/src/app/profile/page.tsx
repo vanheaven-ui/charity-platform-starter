@@ -1,11 +1,9 @@
-// app/profile/page.tsx
 "use client";
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
-import { useAuth } from "@/context/AuthContext"; // Use alias
-import { updateProfile } from "@/lib/api"; // Use alias
+import { useAuth } from "@/context/AuthContext";
+import { updateProfile } from "@/lib/api";
 import { Button } from "@/components/Button";
-import Link from "next/link";
 
 interface FormData {
   name: string;
@@ -21,7 +19,7 @@ export default function Profile() {
     name: "",
     email: "",
     preferredLanguage: "",
-    role: "User", // Default role
+    role: "User",
   });
   const [password, setPassword] = useState("");
   const [isEditing, setIsEditing] = useState(false);
@@ -37,7 +35,7 @@ export default function Profile() {
         name: user.name,
         email: user.email,
         preferredLanguage: user.preferredLanguage || "",
-        role: user.role || "User", // Set from user data
+        role: user.role || "User",
       });
     }
   }, [user, loading, router]);
@@ -64,17 +62,21 @@ export default function Profile() {
       if (token) {
         const updateData = password ? { ...formData, password } : formData;
         const updatedUser = await updateProfile(updateData, token);
-        setUser(updatedUser); // Update the user state in context
+        setUser(updatedUser);
         setSuccess("Profile updated successfully!");
         setIsEditing(false);
-        setPassword(""); // Clear password field after successful update
+        setPassword("");
       }
-    } catch (err: any) {
+    } catch (err: unknown) {
       console.error("Failed to update profile:", err);
-      setError(
-        err.response?.data?.error ||
-          "Failed to update profile. Please try again."
-      );
+      const errorMessage =
+        typeof err === "object" &&
+        err !== null &&
+        "response" in err &&
+        (err as any).response?.data?.error
+          ? (err as any).response.data.error
+          : "Failed to update profile. Please try again.";
+      setError(errorMessage);
     } finally {
       setApiLoading(false);
     }
@@ -87,8 +89,6 @@ export default function Profile() {
       </div>
     );
   }
-
-  const isVolunteerOrAdmin = user.role === "Volunteer" || user.role === "Admin";
 
   return (
     <div className="pt-16">

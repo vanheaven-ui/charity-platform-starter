@@ -66,7 +66,7 @@ export default function VolunteerDashboard({ user }: VolunteerDashboardProps) {
 
       {signedUpEvents.length === 0 ? (
         <p className="text-gray-600 text-lg text-center py-10">
-          You haven't signed up for any events yet.{" "}
+          You haven&apos;t signed up for any events yet.
           <Link href="/events" className="text-blue-600 hover:underline">
             Explore upcoming events
           </Link>{" "}

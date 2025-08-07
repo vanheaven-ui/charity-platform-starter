@@ -67,8 +67,8 @@ export default function MyDonations() {
                   className="bg-blue-50 p-6 rounded-lg shadow-sm"
                 >
                   <p className="font-semibold text-lg">
-                    Donated ${donation.amount.toLocaleString()} to "
-                    {donation.project.name}"
+                    Donated ${donation.amount.toLocaleString()} to &quot;
+                    {donation.project.name}&quot;
                   </p>
                   {donation.message && (
                     <p className="text-gray-700 mt-2">

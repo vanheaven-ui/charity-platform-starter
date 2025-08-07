@@ -1,9 +1,7 @@
-// components/dashboards/BeneficiaryDashboard.tsx
 import Link from "next/link";
-import { Button } from "@/components/Button";
 
 interface BeneficiaryDashboardProps {
-  user: any; // User object from AuthContext
+  user: any; 
 }
 
 export default function BeneficiaryDashboard({
@@ -16,7 +14,7 @@ export default function BeneficiaryDashboard({
       </h2>
       <p className="text-gray-700 text-lg mb-8">
         This is your beneficiary dashboard. Here you will find updates on the
-        support you've received and relevant project information.
+        support you&lsquo;ve received and relevant project information.
       </p>
       <div className="mt-8 grid grid-cols-1 md:grid-cols-2 gap-6 max-w-xl mx-auto">
         <Link

@@ -11,7 +11,6 @@ interface Event {
   description: string;
   locationName: string;
   eventDate: string; // ISO string
-  // Add other fields from your Event model as needed
 }
 
 export default function EventsPage() {

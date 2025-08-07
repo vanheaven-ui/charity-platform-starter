@@ -1,16 +1,15 @@
 "use client";
 import { useState } from "react";
-import { registerUser, registerWithFirebaseToken } from "../../lib/api";
+import {
+  registerUser,
+  registerWithFirebaseToken,
+  RegisterUserData,
+} from "../../lib/api";
 import { useRouter } from "next/navigation";
 import { Button } from "../../components/Button";
 import Link from "next/link";
 import { initializeApp } from "firebase/app";
-import {
-  getAuth,
-  GoogleAuthProvider,
-  signInWithPopup,
-  User as FirebaseUser,
-} from "firebase/auth";
+import { getAuth, GoogleAuthProvider, signInWithPopup } from "firebase/auth";
 
 // Firebase configuration from environment variables
 const firebaseConfig = {
@@ -34,8 +33,7 @@ export default function Register() {
     email: "",
     password: "",
   });
-  // New state for the user's selected role
-  const [role, setRole] = useState("Donor");
+  const [role, setRole] = useState<"Donor" | "Volunteer" | "Admin">("Donor");
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
@@ -49,17 +47,23 @@ export default function Register() {
     setError(null);
 
     try {
-      await registerUser({
-        ...formData,
-        status: "active",
-        preferredLanguage: "en",
-        role: role, // Use the selected role from state
-      });
+      const userData: RegisterUserData = {
+        name: formData.name,
+        email: formData.email,
+        password: formData.password,
+        role: role,
+      };
+      await registerUser(userData);
       console.log("Registration successful!");
       router.push("/login");
-    } catch (err: any) {
-      if (err.response && err.response.data && err.response.data.error) {
-        setError(err.response.data.error);
+    } catch (err: unknown) {
+      if (
+        typeof err === "object" &&
+        err !== null &&
+        "response" in err &&
+        (err as any).response?.data?.error
+      ) {
+        setError((err as any).response.data.error);
       } else {
         setError("An unexpected error occurred. Please try again.");
       }
@@ -77,11 +81,9 @@ export default function Register() {
       const result = await signInWithPopup(auth, provider);
       const idToken = await result.user.getIdToken();
 
-      // Use the imported service function to send the Firebase token to your backend
       const backendResponse = await registerWithFirebaseToken(idToken);
       if (backendResponse) {
         console.log("Google registration successful!", backendResponse);
-        // You may want to automatically log the user in after registration
         router.push("/login");
       } else {
         throw new Error("Failed to register with backend.");
@@ -152,7 +154,6 @@ export default function Register() {
                 className="w-full px-5 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 transition-colors"
               />
             </div>
-            {/* Added a new dropdown for role selection */}
             <div>
               <label
                 htmlFor="role"
@@ -164,12 +165,15 @@ export default function Register() {
                 id="role"
                 name="role"
                 value={role}
-                onChange={(e) => setRole(e.target.value)}
+                onChange={(e) =>
+                  setRole(e.target.value as "Donor" | "Volunteer" | "Admin")
+                }
                 required
                 className="mt-1 block w-full pl-3 pr-10 py-2 text-base border-gray-300 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm rounded-md"
               >
                 <option value="Donor">Donor</option>
                 <option value="Volunteer">Volunteer</option>
+                <option value="Admin">Admin</option>
               </select>
             </div>
             <Button
@@ -198,6 +202,7 @@ export default function Register() {
               fill="none"
               xmlns="http://www.w3.org/2000/svg"
             >
+              {/* Google Icon Paths */}
               <path
                 d="M43.611 20.084H24V28.18H35.44C34.78 31.258 32.962 33.722 30.347 35.334V40.237H39.297C43.914 36.634 46.54 30.638 46.54 23.992C46.54 22.564 46.417 21.163 46.173 19.824L43.611 20.084Z"
                 fill="#4285F4"

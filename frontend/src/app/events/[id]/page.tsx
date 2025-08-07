@@ -1,6 +1,6 @@
 "use client";
 import { useState, useEffect } from "react";
-import { useParams, useRouter } from "next/navigation";
+import { useParams } from "next/navigation";
 import { getEventById, signUpForEvent } from "@/lib/api"; 
 import { useAuth } from "@/context/AuthContext"; 
 import { format } from "date-fns";
@@ -20,7 +20,6 @@ interface Event {
 
 export default function EventDetailPage() {
   const { id } = useParams();
-  const router = useRouter();
   const { user, loading: authLoading } = useAuth(); // Get user and authLoading from AuthContext
   const [event, setEvent] = useState<Event | null>(null);
   const [loading, setLoading] = useState(true);
@@ -99,7 +98,7 @@ export default function EventDetailPage() {
             <p className="text-lg text-blue-600 font-semibold mb-6">
               {format(
                 new Date(event.eventDate),
-                "EEEE, MMMM d, yyyy 'at' h:mm a"
+                "EEEE, MMMM d, yyyy &apos;at&apos; h:mm a"
               )}
             </p>
 
@@ -155,7 +154,7 @@ export default function EventDetailPage() {
                   <p className="text-gray-700 mb-4">
                     You are currently logged in as a **{user.role}**. To sign up
                     for events and contribute your time, please update your role
-                    to 'Volunteer' in your profile.
+                    to &apos;Volunteer&apos; in your profile.
                   </p>
                   <Link href="/profile" passHref legacyBehavior>
                     <Button variant="secondary" size="md">
@@ -175,7 +174,7 @@ export default function EventDetailPage() {
                   >
                     log in
                   </Link>{" "}
-                  to sign up for this event. If you don't have an account, you
+                  to sign up for this event. If you don&apos;t have an account, you
                   can{" "}
                   <Link
                     href="/register"

@@ -1,27 +1,105 @@
 import axios from "axios";
 
-// This checks for the environment variable. In Next.js,
-// client-side variables must be prefixed with `NEXT_PUBLIC_`.
-// `process.env` is the correct way to access them.
 const API_URL = process.env.NEXT_PUBLIC_API_URL;
 
 if (!API_URL) {
   throw new Error("NEXT_PUBLIC_API_URL is not defined");
 }
 
-/**
- * Verifies a Firebase ID token with your backend.
- * @param idToken The Firebase ID token to verify.
- * @returns The backend-generated token, or null if verification fails.
- */
+export interface User {
+  id: number;
+  email: string;
+  role: "Donor" | "Admin" | "Volunteer" | "Partner" | "Beneficiary" | "Supplier" | "Member";
+  name?: string;
+  profileImage?: string;
+}
+
+export interface RegisterUserData {
+  email: string;
+  password: string;
+  role: "Donor" | "Admin" | "Volunteer";
+  name?: string;
+}
+
+export interface LoginData {
+  email: string;
+  password: string;
+}
+
+export interface LoginResponse {
+  token: string;
+  user: User;
+}
+
+export interface Project {
+  id: number;
+  title: string;
+  description: string;
+  goal: number;
+  raised: number;
+}
+
+export interface ProjectData {
+  title: string;
+  description: string;
+  goal: number;
+}
+
+export interface Donation {
+  id: number;
+  amount: number;
+  projectId: number;
+  donorId: number;
+}
+
+export interface DonationData {
+  amount: number;
+  projectId: number;
+}
+
+export interface DonationByProject {
+  projectTitle: string;
+  totalDonations: number;
+}
+
+export interface MonthlyDonation {
+  month: string;
+  totalAmount: number;
+}
+
+export interface Event {
+  id: number;
+  title: string;
+  description: string;
+  date: string;
+  location: string;
+}
+
+export interface EventData {
+  title: string;
+  description: string;
+  date: string;
+  location: string;
+}
+
+export interface Volunteer {
+  id: number;
+  name: string;
+  email: string;
+}
+
+export interface UpdateProfileData {
+  name?: string;
+  email?: string;
+}
+
 export const verifyFirebaseToken = async (
   idToken: string
 ): Promise<string | null> => {
   try {
-    const response = await axios.post(`${API_URL}/auth/google`, {
+    const response = await axios.post<{ token: string }>(`${API_URL}/auth/google`, {
       token: idToken,
     });
-
     const { token } = response.data;
     return token;
   } catch (error) {
@@ -30,54 +108,34 @@ export const verifyFirebaseToken = async (
   }
 };
 
-/**
- * Registers a new user with a Firebase ID token.
- * This is used for social login (e.g., Google Sign-In) to create a user account on your backend.
- * @param idToken The Firebase ID token from the client.
- * @returns The user data from the backend, or null if registration fails.
- */
 export const registerWithFirebaseToken = async (
   idToken: string
-): Promise<any | null> => {
+): Promise<User | null> => {
   try {
-    // We've updated the URL to use the consistent API_URL variable
-    const response = await axios.post(`${API_URL}/google/callback`, {
+    const response = await axios.post<{ user: User }>(`${API_URL}/google/callback`, {
       token: idToken,
-      role: "Donor", // Pass the desired role to the backend
+      role: "Donor",
     });
-
-    const data = response.data;
-    return data;
+    const { user } = response.data;
+    return user;
   } catch (error) {
     console.error("Backend token registration error:", error);
     return null;
   }
 };
 
-/**
- * Registers a new user.
- * @param userData The user data for registration.
- */
-export const registerUser = async (userData: any) => {
-  const response = await axios.post(`${API_URL}/register`, userData);
+export const registerUser = async (userData: RegisterUserData): Promise<User> => {
+  const response = await axios.post<User>(`${API_URL}/register`, userData);
   return response.data;
 };
 
-/**
- * Logs a user in and returns a token.
- * @param loginData The user login credentials.
- */
-export const loginUser = async (loginData: any) => {
-  const response = await axios.post(`${API_URL}/login`, loginData);
+export const loginUser = async (loginData: LoginData): Promise<LoginResponse> => {
+  const response = await axios.post<LoginResponse>(`${API_URL}/login`, loginData);
   return response.data;
 };
 
-/**
- * Fetches the current user's profile.
- * @param token The user's authentication token.
- */
-export const getProfile = async (token: string) => {
-  const response = await axios.get(`${API_URL}/profile`, {
+export const getProfile = async (token: string): Promise<User> => {
+  const response = await axios.get<User>(`${API_URL}/profile`, {
     headers: {
       Authorization: `Bearer ${token}`,
     },
@@ -85,24 +143,15 @@ export const getProfile = async (token: string) => {
   return response.data;
 };
 
-/**
- * Fetches a list of projects.
- * @param search An optional search query.
- */
-export const getProjects = async (search?: string) => {
-  const response = await axios.get(`${API_URL}/projects`, {
+export const getProjects = async (search?: string): Promise<Project[]> => {
+  const response = await axios.get<Project[]>(`${API_URL}/projects`, {
     params: { search },
   });
   return response.data;
 };
 
-/**
- * Creates a new project.
- * @param projectData The data for the new project.
- * @param token The user's authentication token.
- */
-export const createProject = async (projectData: any, token: string) => {
-  const response = await axios.post(`${API_URL}/projects`, projectData, {
+export const createProject = async (projectData: ProjectData, token: string): Promise<Project> => {
+  const response = await axios.post<Project>(`${API_URL}/projects`, projectData, {
     headers: {
       Authorization: `Bearer ${token}`,
     },
@@ -110,18 +159,12 @@ export const createProject = async (projectData: any, token: string) => {
   return response.data;
 };
 
-/**
- * Updates an existing project.
- * @param projectId The ID of the project to update.
- * @param projectData The updated project data.
- * @param token The user's authentication token.
- */
 export const updateProject = async (
   projectId: number,
-  projectData: any,
+  projectData: ProjectData,
   token: string
-) => {
-  const response = await axios.put(
+): Promise<Project> => {
+  const response = await axios.put<Project>(
     `${API_URL}/projects/${projectId}`,
     projectData,
     {
@@ -133,13 +176,8 @@ export const updateProject = async (
   return response.data;
 };
 
-/**
- * Deletes a project.
- * @param projectId The ID of the project to delete.
- * @param token The user's authentication token.
- */
-export const deleteProject = async (projectId: number, token: string) => {
-  const response = await axios.delete(`${API_URL}/projects/${projectId}`, {
+export const deleteProject = async (projectId: number, token: string): Promise<{ message: string }> => {
+  const response = await axios.delete<{ message: string }>(`${API_URL}/projects/${projectId}`, {
     headers: {
       Authorization: `Bearer ${token}`,
     },
@@ -147,13 +185,8 @@ export const deleteProject = async (projectId: number, token: string) => {
   return response.data;
 };
 
-/**
- * Creates a new donation.
- * @param donationData The data for the new donation.
- * @param token The user's authentication token.
- */
-export const createDonation = async (donationData: any, token: string) => {
-  const response = await axios.post(`${API_URL}/donations`, donationData, {
+export const createDonation = async (donationData: DonationData, token: string): Promise<Donation> => {
+  const response = await axios.post<Donation>(`${API_URL}/donations`, donationData, {
     headers: {
       Authorization: `Bearer ${token}`,
     },
@@ -161,24 +194,15 @@ export const createDonation = async (donationData: any, token: string) => {
   return response.data;
 };
 
-/**
- * Fetches the user's donations.
- * @param token The user's authentication token.
- */
-export const getMyDonations = async (token: string) => {
-  const response = await axios.get(`${API_URL}/donations`, {
+export const getMyDonations = async (token: string): Promise<Donation[]> => {
+  const response = await axios.get<Donation[]>(`${API_URL}/donations`, {
     headers: { Authorization: `Bearer ${token}` },
   });
   return response.data;
 };
 
-/**
- * Updates the user's profile.
- * @param updateData The data to update the profile with.
- * @param token The user's authentication token.
- */
-export const updateProfile = async (updateData: any, token: string) => {
-  const response = await axios.put(`${API_URL}/profile`, updateData, {
+export const updateProfile = async (updateData: UpdateProfileData, token: string): Promise<User> => {
+  const response = await axios.put<User>(`${API_URL}/profile`, updateData, {
     headers: {
       Authorization: `Bearer ${token}`,
     },
@@ -186,12 +210,8 @@ export const updateProfile = async (updateData: any, token: string) => {
   return response.data;
 };
 
-/**
- * Fetches donations grouped by project.
- * @param token The user's authentication token.
- */
-export const getDonationsByProject = async (token: string) => {
-  const response = await axios.get(
+export const getDonationsByProject = async (token: string): Promise<DonationByProject[]> => {
+  const response = await axios.get<DonationByProject[]>(
     `${API_URL}/dashboard/donations-by-project`,
     {
       headers: {
@@ -202,12 +222,8 @@ export const getDonationsByProject = async (token: string) => {
   return response.data;
 };
 
-/**
- * Fetches monthly donation data.
- * @param token The user's authentication token.
- */
-export const getMonthlyDonations = async (token: string) => {
-  const response = await axios.get(`${API_URL}/dashboard/monthly-donations`, {
+export const getMonthlyDonations = async (token: string): Promise<MonthlyDonation[]> => {
+  const response = await axios.get<MonthlyDonation[]>(`${API_URL}/dashboard/monthly-donations`, {
     headers: {
       Authorization: `Bearer ${token}`,
     },
@@ -215,35 +231,22 @@ export const getMonthlyDonations = async (token: string) => {
   return response.data;
 };
 
-/**
- * Fetches all events.
- * @param search An optional search query.
- */
-export const getAllEvents = async (search?: string) => {
-  const response = await axios.get(`${API_URL}/events`, {
+export const getAllEvents = async (search?: string): Promise<Event[]> => {
+  const response = await axios.get<Event[]>(`${API_URL}/events`, {
     params: { search },
   });
   return response.data;
 };
 
-/**
- * Fetches a single event by ID.
- * @param eventId The ID of the event.
- */
-export const getEventById = async (eventId: number) => {
-  const response = await axios.get(`${API_URL}/events/${eventId}`);
+export const getEventById = async (eventId: number): Promise<Event> => {
+  const response = await axios.get<Event>(`${API_URL}/events/${eventId}`);
   return response.data;
 };
 
-/**
- * Signs up a user for an event.
- * @param eventId The ID of the event to sign up for.
- * @param token The user's authentication token.
- */
-export const signUpForEvent = async (eventId: number, token: string) => {
-  const response = await axios.post(
+export const signUpForEvent = async (eventId: number, token: string): Promise<{ message: string }> => {
+  const response = await axios.post<{ message: string }>(
     `${API_URL}/events/${eventId}/signup`,
-    {}, // No body needed for this POST request
+    {},
     {
       headers: {
         Authorization: `Bearer ${token}`,
@@ -253,13 +256,8 @@ export const signUpForEvent = async (eventId: number, token: string) => {
   return response.data;
 };
 
-/**
- * Creates a new event.
- * @param eventData The data for the new event.
- * @param token The user's authentication token.
- */
-export const createEvent = async (eventData: any, token: string) => {
-  const response = await axios.post(`${API_URL}/events`, eventData, {
+export const createEvent = async (eventData: EventData, token: string): Promise<Event> => {
+  const response = await axios.post<Event>(`${API_URL}/events`, eventData, {
     headers: {
       Authorization: `Bearer ${token}`,
     },
@@ -267,18 +265,12 @@ export const createEvent = async (eventData: any, token: string) => {
   return response.data;
 };
 
-/**
- * Updates an existing event.
- * @param eventId The ID of the event to update.
- * @param eventData The updated event data.
- * @param token The user's authentication token.
- */
 export const updateEvent = async (
   eventId: number,
-  eventData: any,
+  eventData: EventData,
   token: string
-) => {
-  const response = await axios.put(`${API_URL}/events/${eventId}`, eventData, {
+): Promise<Event> => {
+  const response = await axios.put<Event>(`${API_URL}/events/${eventId}`, eventData, {
     headers: {
       Authorization: `Bearer ${token}`,
     },
@@ -286,13 +278,8 @@ export const updateEvent = async (
   return response.data;
 };
 
-/**
- * Deletes an event.
- * @param eventId The ID of the event to delete.
- * @param token The user's authentication token.
- */
-export const deleteEvent = async (eventId: number, token: string) => {
-  const response = await axios.delete(`${API_URL}/events/${eventId}`, {
+export const deleteEvent = async (eventId: number, token: string): Promise<{ message: string }> => {
+  const response = await axios.delete<{ message: string }>(`${API_URL}/events/${eventId}`, {
     headers: {
       Authorization: `Bearer ${token}`,
     },
@@ -300,13 +287,8 @@ export const deleteEvent = async (eventId: number, token: string) => {
   return response.data;
 };
 
-/**
- * Fetches a list of volunteers for an event.
- * @param eventId The ID of the event.
- * @param token The user's authentication token.
- */
-export const getVolunteersForEvent = async (eventId: number, token: string) => {
-  const response = await axios.get(`${API_URL}/events/${eventId}/volunteers`, {
+export const getVolunteersForEvent = async (eventId: number, token: string): Promise<Volunteer[]> => {
+  const response = await axios.get<Volunteer[]>(`${API_URL}/events/${eventId}/volunteers`, {
     headers: {
       Authorization: `Bearer ${token}`,
     },
@@ -314,12 +296,8 @@ export const getVolunteersForEvent = async (eventId: number, token: string) => {
   return response.data;
 };
 
-/**
- * Fetches events the user has signed up for.
- * @param token The user's authentication token.
- */
-export const getSignedUpEvents = async (token: string) => {
-  const response = await axios.get(`${API_URL}/users/signed-up-events`, {
+export const getSignedUpEvents = async (token: string): Promise<Event[]> => {
+  const response = await axios.get<Event[]>(`${API_URL}/users/signed-up-events`, {
     headers: {
       Authorization: `Bearer ${token}`,
     },

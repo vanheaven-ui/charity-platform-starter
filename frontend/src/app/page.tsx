@@ -1,9 +1,7 @@
-// app/page.tsx
 "use client";
 import { useRouter } from "next/navigation";
 import { Button } from "../components/Button";
 import Link from "next/link";
-import Image from "next/image"; // Keep Image import if you plan to use it elsewhere or for future additions
 
 export default function Home() {
   const router = useRouter();
@@ -23,7 +21,7 @@ export default function Home() {
           </h2>
           <p className="text-lg md:text-xl mb-10 max-w-3xl mx-auto animate-fadeInUp delay-100">
             A transparent platform for a world of difference. See every step of
-            your donation's journey.
+            your donation&apos;s journey.
           </p>
           <Button
             onClick={handleDonateClick}
@@ -45,7 +43,6 @@ export default function Home() {
           <div className="grid grid-cols-1 lg:grid-cols-2 items-center gap-16 lg:gap-24">
             {/* Step 01 */}
             <div className="h-64 lg:h-96 w-full rounded-3xl shadow-xl overflow-hidden transform lg:-rotate-3 transition-transform hover:rotate-0">
-              {/* Gradient for image replacement */}
               <div className="w-full h-full bg-gradient-to-br from-blue-500 to-purple-600"></div>
             </div>
             <div className="p-6">
@@ -79,7 +76,6 @@ export default function Home() {
               </p>
             </div>
             <div className="order-1 lg:order-2 h-64 lg:h-96 w-full rounded-3xl shadow-xl overflow-hidden transform lg:rotate-3 transition-transform hover:rotate-0">
-              {/* Gradient for image replacement */}
               <div className="w-full h-full bg-gradient-to-br from-purple-500 to-pink-600"></div>
             </div>
           </div>
@@ -87,7 +83,6 @@ export default function Home() {
           {/* Step 03 */}
           <div className="grid grid-cols-1 lg:grid-cols-2 items-center gap-16 lg:gap-24 mt-24">
             <div className="h-64 lg:h-96 w-full rounded-3xl shadow-xl overflow-hidden transform lg:-rotate-3 transition-transform hover:rotate-0">
-              {/* Gradient for image replacement */}
               <div className="w-full h-full bg-gradient-to-br from-pink-500 to-red-600"></div>
             </div>
             <div className="p-6">
@@ -107,7 +102,7 @@ export default function Home() {
         </div>
       </section>
 
-      {/* The "Give Your Time, Make a Difference" section with a gradient */}
+      {/* The "Give Your Time, Make a Difference" section */}
       <section className="py-24 bg-gray-100 text-gray-800">
         <div className="container mx-auto px-8">
           <h3 className="text-4xl font-bold text-center mb-16">
@@ -128,7 +123,6 @@ export default function Home() {
               </p>
             </div>
             <div className="order-1 lg:order-2 h-64 lg:h-96 w-full rounded-3xl shadow-xl overflow-hidden transform lg:rotate-3 transition-transform hover:rotate-0">
-              {/* Gradient for image replacement */}
               <div className="w-full h-full bg-gradient-to-br from-yellow-500 to-green-600"></div>
             </div>
           </div>
@@ -171,7 +165,7 @@ export default function Home() {
         </div>
       </section>
 
-      {/* Final Call to Action section with correctly styled buttons */}
+      {/* Final Call to Action */}
       <section className="py-24 bg-blue-600 text-white text-center">
         <div className="container mx-auto px-8">
           <h3 className="text-4xl font-bold mb-4">
@@ -190,7 +184,6 @@ export default function Home() {
               <Button
                 variant="outline"
                 size="lg"
-                // The following classes ensure it's white with a blue border, contrasting against the blue section background
                 className="bg-white text-blue-600 border-2 border-white hover:bg-gray-200"
               >
                 Start Volunteering
