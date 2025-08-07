@@ -1,10 +1,10 @@
-import { PrismaClient, Prisma } from "@prisma/client";
+import { PrismaClient, Prisma, Role, Status } from "@prisma/client";
 import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
-import type { Event as PrismaEvent } from '@prisma/client';
+import type { Event as PrismaEvent, User as PrismaUser } from "@prisma/client";
 
 const prisma = new PrismaClient();
-const saltRounds = 10; // For password hashing
+const saltRounds = 10;
 const jwtSecret = process.env.JWT_SECRET;
 
 export const registerUser = async (userData: Prisma.UserCreateInput) => {
@@ -28,13 +28,13 @@ export const registerUser = async (userData: Prisma.UserCreateInput) => {
 
 export const loginUser = async (email: string, password: string) => {
   if (!jwtSecret) {
-    throw new Error(" JWT secret is not defined");
+    throw new Error("JWT secret is not defined");
   }
 
   const user = await prisma.user.findUnique({ where: { email } });
 
   if (!user) {
-    throw new Error("invalid credentials");
+    throw new Error("Invalid credentials");
   }
 
   const isPasswordValid = await bcrypt.compare(password, user.password);
@@ -81,7 +81,6 @@ export const updateUserProfile = async (
   userId: number,
   updateData: Prisma.UserUpdateInput
 ) => {
-  // Hash password if it's included in the update data
   if (updateData.password && typeof updateData.password === "string") {
     const salt = await bcrypt.genSalt(10);
     updateData.password = await bcrypt.hash(updateData.password, salt);
@@ -101,7 +100,9 @@ export const updateUserProfile = async (
   });
 };
 
-export const getSignedUpEvents = async (userId: number): Promise<PrismaEvent[]> => {
+export const getSignedUpEvents = async (
+  userId: number
+): Promise<PrismaEvent[]> => {
   const userSignups = await prisma.eventSignup.findMany({
     where: { userId },
     select: {
@@ -109,10 +110,56 @@ export const getSignedUpEvents = async (userId: number): Promise<PrismaEvent[]> 
     },
     orderBy: {
       event: {
-        eventDate: 'asc',
+        eventDate: "asc",
       },
     },
   });
 
   return userSignups.map((signup) => signup.event);
+};
+
+export const findOrCreateUserFromGoogleProfile = async (googleUserData: {
+  email: string;
+  name?: string;
+}): Promise<string> => {
+  if (!jwtSecret) {
+    throw new Error("JWT secret is not defined");
+  }
+
+  let user = await prisma.user.findUnique({
+    where: { email: googleUserData.email },
+  });
+
+  if (!user) {
+    const userName = googleUserData.name ?? "New User";
+    const hashedPassword = await bcrypt.hash(crypto.randomUUID(), saltRounds);
+
+    const newUserData: Prisma.UserCreateInput = {
+      email: googleUserData.email,
+      name: userName,
+      password: hashedPassword,
+      role: Role.Donor,
+      status: Status.Active,
+      preferredLanguage: "en",
+    };
+
+    user = await prisma.user.create({ data: newUserData });
+  }
+
+  const token = jwt.sign(
+    {
+      userId: user.id,
+      role: user.role,
+    },
+    jwtSecret,
+    { expiresIn: "1h" }
+  );
+
+  return token;
+};
+
+export const findUserByEmail = async (
+  email: string
+): Promise<PrismaUser | null> => {
+  return prisma.user.findUnique({ where: { email } });
 };

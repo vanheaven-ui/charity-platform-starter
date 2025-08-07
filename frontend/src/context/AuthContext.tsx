@@ -7,9 +7,18 @@ import {
   ReactNode,
 } from "react";
 import { getProfile } from "../lib/api";
+import { useRouter } from "next/navigation";
+
+// Define the User and AuthContext types
+interface User {
+  id: string;
+  email: string;
+  role: string;
+  // Add other user properties from your backend
+}
 
 interface AuthContextType {
-  user: any;
+  user: User | null;
   loading: boolean;
   login: (token: string) => void;
   logout: () => void;
@@ -18,8 +27,10 @@ interface AuthContextType {
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
+// The AuthProvider component manages the user's session
 export function AuthProvider({ children }: { children: ReactNode }) {
-  const [user, setUser] = useState(null);
+  const router = useRouter();
+  const [user, setUser] = useState<User | null>(null);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -47,6 +58,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const logout = () => {
     localStorage.removeItem("token");
     setUser(null);
+    router.push("/login");
   };
 
   return (
@@ -56,6 +68,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   );
 }
 
+// Custom hook to use the authentication context
 export function useAuth() {
   const context = useContext(AuthContext);
   if (context === undefined) {
