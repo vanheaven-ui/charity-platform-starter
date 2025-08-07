@@ -1,8 +1,8 @@
-import { Request, Response } from "express";
+import { Response } from "express";
 import * as userService from "../services/userService";
-import { type AuthRequest } from "../middleware/authMiddleware";
+import { AuthRequest } from "../middleware/authMiddleware";
 
-export const registerUser = async (req: Request, res: Response) => {
+export const registerUser = async (req: AuthRequest, res: Response) => {
   try {
     const newUser = await userService.registerUser(req.body);
     res.status(201).json(newUser);
@@ -11,7 +11,7 @@ export const registerUser = async (req: Request, res: Response) => {
   }
 };
 
-export const loginUser = async (req: Request, res: Response) => {
+export const loginUser = async (req: AuthRequest, res: Response) => {
   try {
     const { email, password } = req.body;
     const token = await userService.loginUser(email, password);
@@ -35,7 +35,7 @@ export const getProfile = async (req: AuthRequest, res: Response) => {
 
 export const updateProfile = async (req: AuthRequest, res: Response) => {
   try {
-    if (!req.user || !req.user.userId) {
+    if (!req.user?.userId) {
       return res.status(401).json({ error: "User not authenticated" });
     }
     const updatedUser = await userService.updateUserProfile(
@@ -50,12 +50,37 @@ export const updateProfile = async (req: AuthRequest, res: Response) => {
 
 export const getSignedUpEvents = async (req: AuthRequest, res: Response) => {
   try {
-    if (!req.user || !req.user.userId) {
+    if (!req.user?.userId) {
       return res.status(401).json({ error: "User not authenticated" });
     }
-    const userId = req.user.userId;
-    const events = await userService.getSignedUpEvents(userId);
+    const events = await userService.getSignedUpEvents(req.user.userId);
     res.status(200).json(events);
+  } catch (error: any) {
+    res.status(500).json({ error: error.message });
+  }
+};
+
+export const googleAuthCallback = async (req: AuthRequest, res: Response) => {
+  try {
+    if (!req.user || typeof req.user !== "object" || !("email" in req.user)) {
+      return res
+        .status(401)
+        .json({ message: "Google authentication failed. No user data found." });
+    }
+    const googleUserData = req.user as {
+      email: string;
+      name?: string;
+    };
+
+    if (!googleUserData?.email) {
+      return res.status(400).json({ error: "Google user data is missing." });
+    }
+
+    const token = await userService.findOrCreateUserFromGoogleProfile(
+      googleUserData
+    );
+
+    res.status(200).json({ token });
   } catch (error: any) {
     res.status(500).json({ error: error.message });
   }
