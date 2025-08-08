@@ -6,7 +6,7 @@ Welcome to the **Charity Platform Starter**! This is a robust, full-stack web ap
 
 This project is built with modern web technologies, focusing on scalability, security, and ease of use.
 
-Whether you're a developer looking for a comprehensive starting point for a new project or a non-profit organization aiming to build a custom donation platform, this starter kit provides all the essential features to get you up and running quickly.
+Whether you are a developer looking for a comprehensive starting point for a new project or a non-profit organization aiming to build a custom donation platform, this starter kit provides all the essential features to get you up and running quickly.
 
 ---
 
@@ -27,13 +27,10 @@ Whether you're a developer looking for a comprehensive starting point for a new 
   A framework for handling donations, tracking transactions, and recording donor information.
 
 - **Dashboard**  
-  A central dashboard for administrators to monitor campaign progress, view donation history, and manage users.
+  A central dashboard for administrators to monitor donation progress, view donation history, and manage users.
 
 - **Responsive Design**  
   A clean, modern, and fully responsive user interface that works seamlessly on desktop, tablet, and mobile devices.
-
-- **Mobile API Integration**  
-  Designed with a separate, dedicated mobile repository in mind, allowing for easy integration with a mobile application for on-the-go functionality.
 
 ---
 
@@ -41,17 +38,15 @@ Whether you're a developer looking for a comprehensive starting point for a new 
 
 ### Frontend
 
-- **Framework**: React  
+- **Framework**: Nextjs  
 - **Styling**: Tailwind CSS  
-- **State Management**: _(e.g., React Context, Zustand, Redux) - Specify your chosen state management here._  
-- **Icons**: Lucide React  
+- **State Management**: (e.g., React Context)
 
 ### Backend
 
-- **Framework**: _(e.g., Node.js with Express, Python with Django/Flask, Ruby on Rails) - Specify your chosen backend framework here._  
-- **Database**: _(e.g., PostgreSQL, MongoDB, MySQL) - Specify your chosen database here._  
-- **Authentication**: _(e.g., JWT, OAuth) - Specify your chosen authentication method here._
-
+- **Framework**: Node.js with Express 
+- **Database**: PostgreSQL, MongoDB, MySQL  
+- **Authentication**: JWT 
 ---
 
 ## Getting Started
@@ -95,7 +90,6 @@ Before you begin, ensure you have the following installed on your machine:
 
     The application should now be running at: [http://localhost:3000](http://localhost:3000)
 
----
 
 ## API Endpoints
 
@@ -109,7 +103,6 @@ The backend is built as a RESTful API to communicate with the frontend and a ded
 - `GET/POST /api/proposals`: Handle project proposals and their statuses.  
 - `GET/POST /api/notifications`: Manage user notifications.
 
----
 
 ## Contributing
 
