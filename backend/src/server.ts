@@ -8,7 +8,7 @@ import donationRoutes from "./routes/donationRoutes";
 import dashboardRoutes from "./routes/dashboardRoutes";
 import eventRoutes from "./routes/eventRoutes";
 import proposalRoutes from "./routes/proposalRoutes";
-import notificationRoutes from './routes/notificationRoutes';
+import notificationRoutes from "./routes/notificationRoutes";
 
 dotenv.config();
 
@@ -18,7 +18,10 @@ const port = process.env.PORT || 5000;
 // CORS configuration to allow requests from the frontend
 app.use(
   cors({
-    origin: "http://localhost:3000",
+    origin: [
+      "http://localhost:3000",
+      "https://charity-platform-starter.vercel.app/",
+    ],
   })
 );
 
@@ -28,9 +31,9 @@ app.use("/api", userRoutes);
 app.use("/api/projects", projectRoutes);
 app.use("/api/donations", donationRoutes);
 app.use("/api/dashboard", dashboardRoutes);
-app.use('/api/events', eventRoutes);
-app.use('/api/proposals', proposalRoutes);
-app.use('/api/notifications', notificationRoutes);
+app.use("/api/events", eventRoutes);
+app.use("/api/proposals", proposalRoutes);
+app.use("/api/notifications", notificationRoutes);
 
 app.listen(port, () => {
   console.log(`Server running on port ${port}`);
