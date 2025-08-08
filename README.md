@@ -1,3 +1,4 @@
+
 # Charity Platform Starter
 
 ## Project Overview
@@ -7,6 +8,13 @@ Welcome to the **Charity Platform Starter**! This is a robust, full-stack web ap
 This project is built with modern web technologies, focusing on scalability, security, and ease of use.
 
 Whether you are a developer looking for a comprehensive starting point for a new project or a non-profit organization aiming to build a custom donation platform, this starter kit provides all the essential features to get you up and running quickly.
+
+---
+
+## 🔗 Live Demo
+
+You can try out the live version of the application here:  
+👉 [https://charity-platform-starter.vercel.app/](https://charity-platform-starter.vercel.app/)
 
 ---
 
@@ -47,6 +55,7 @@ Whether you are a developer looking for a comprehensive starting point for a new
 - **Framework**: Node.js with Express 
 - **Database**: PostgreSQL, MongoDB, MySQL  
 - **Authentication**: JWT 
+
 ---
 
 ## Getting Started
@@ -90,6 +99,7 @@ Before you begin, ensure you have the following installed on your machine:
 
     The application should now be running at: [http://localhost:3000](http://localhost:3000)
 
+---
 
 ## API Endpoints
 
@@ -103,6 +113,7 @@ The backend is built as a RESTful API to communicate with the frontend and a ded
 - `GET/POST /api/proposals`: Handle project proposals and their statuses.  
 - `GET/POST /api/notifications`: Manage user notifications.
 
+---
 
 ## Contributing
 
@@ -135,4 +146,5 @@ Please ensure your code follows the project's coding standards.
 
 ## License
 
-This project is licensed under the **MIT License**.
+This project is licensed under the **MIT License**.  
+See the [LICENSE](./LICENSE) file for more details.
