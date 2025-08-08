@@ -18,10 +18,7 @@ const port = process.env.PORT || 5000;
 // CORS configuration to allow requests from the frontend
 app.use(
   cors({
-    origin: [
-      "http://localhost:3000",
-      "https://charity-platform-starter.vercel.app/",
-    ],
+    origin: "https://charity-platform-starter.vercel.app/",
   })
 );
 
