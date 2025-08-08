@@ -1,4 +1,4 @@
-import { PrismaClient, Prisma, Role, Status } from "@prisma/client";
+import { PrismaClient, Prisma, Role, UserStatus } from "@prisma/client";
 import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
 import type { Event as PrismaEvent, User as PrismaUser } from "@prisma/client";
@@ -139,7 +139,7 @@ export const findOrCreateUserFromGoogleProfile = async (googleUserData: {
       name: userName,
       password: hashedPassword,
       role: Role.Donor,
-      status: Status.Active,
+      status: UserStatus.ACTIVE,
       preferredLanguage: "en",
     };
 
