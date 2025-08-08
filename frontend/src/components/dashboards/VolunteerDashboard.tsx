@@ -1,20 +1,11 @@
-// components/dashboards/VolunteerDashboard.tsx
 import { useEffect, useState } from "react";
 import Link from "next/link";
-import { getSignedUpEvents } from "@/lib/api"; // Use alias
+import { Event, getSignedUpEvents } from "@/lib/api";
 import { format } from "date-fns";
 import { Button } from "@/components/Button";
 
-interface Event {
-  id: number;
-  title: string;
-  description: string;
-  locationName: string;
-  eventDate: string;
-}
-
 interface VolunteerDashboardProps {
-  user: any; // User object from AuthContext
+  user: any;
 }
 
 export default function VolunteerDashboard({ user }: VolunteerDashboardProps) {

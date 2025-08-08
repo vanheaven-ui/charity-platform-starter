@@ -65,6 +65,13 @@ export default function AdminEventsPage() {
     setFormIsLoading(true);
     setError(null);
 
+    const token = localStorage.getItem("token");
+    if (!token) {
+      setError("Authentication error. Please log in again.");
+      setFormIsLoading(false);
+      return;
+    }
+
     const eventData = {
       ...formData,
       locationLat: parseFloat(formData.locationLat),
@@ -73,17 +80,15 @@ export default function AdminEventsPage() {
     };
 
     try {
-      if (user?.token) {
-        if (isEditing && currentEventId !== null) {
-          await updateEvent(currentEventId, eventData, user.token);
-          alert("Event updated successfully!");
-        } else {
-          await createEvent(eventData, user.token);
-          alert("Event created successfully!");
-        }
-        resetForm();
-        fetchEvents();
+      if (isEditing && currentEventId !== null) {
+        await updateEvent(currentEventId, eventData, token);
+        alert("Event updated successfully!");
+      } else {
+        await createEvent(eventData, token);
+        alert("Event created successfully!");
       }
+      resetForm();
+      fetchEvents();
     } catch (err: any) {
       setError(err.response?.data?.error || "Failed to save event.");
     } finally {
@@ -105,13 +110,18 @@ export default function AdminEventsPage() {
   };
 
   const handleDelete = async (eventId: number) => {
+    const token = localStorage.getItem("token");
+
+    if (!token) {
+      alert("User not authenticated. Please log in.");
+      return;
+    }
+
     if (window.confirm("Are you sure you want to delete this event?")) {
       try {
-        if (user?.token) {
-          await deleteEvent(eventId, user.token);
-          alert("Event deleted successfully!");
-          fetchEvents();
-        }
+        await deleteEvent(eventId, token);
+        alert("Event deleted successfully!");
+        fetchEvents();
       } catch (err: any) {
         setError(err.response?.data?.error || "Failed to delete event.");
       }

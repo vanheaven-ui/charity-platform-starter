@@ -1,11 +1,11 @@
 "use client";
 import { useState, useEffect } from "react";
 import { useParams } from "next/navigation";
-import { getEventById, signUpForEvent } from "@/lib/api"; 
-import { useAuth } from "@/context/AuthContext"; 
+import { getEventById, signUpForEvent } from "@/lib/api";
+import { useAuth } from "@/context/AuthContext";
 import { format } from "date-fns";
-import { Button } from "@/components/Button"; 
-import { GoogleMapComponent } from "@/components/GoogleMapComponent"; 
+import { Button } from "@/components/Button";
+import { GoogleMapComponent } from "@/components/GoogleMapComponent";
 import Link from "next/link";
 
 interface Event {
@@ -20,7 +20,7 @@ interface Event {
 
 export default function EventDetailPage() {
   const { id } = useParams();
-  const { user, loading: authLoading } = useAuth(); // Get user and authLoading from AuthContext
+  const { user, loading: authLoading } = useAuth();
   const [event, setEvent] = useState<Event | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -49,8 +49,8 @@ export default function EventDetailPage() {
   }, [id]);
 
   const handleSignUp = async () => {
-    // This check is technically redundant now due to rendering logic, but good for safety
-    if (!user || !user.token) {
+    const token = localStorage.getItem("token");
+    if (!user || !token) {
       setError("Authentication error. Please log in again.");
       return;
     }
@@ -60,7 +60,7 @@ export default function EventDetailPage() {
     setSignUpSuccess(null);
 
     try {
-      await signUpForEvent(Number(id), user.token);
+      await signUpForEvent(Number(id), token);
       setSignUpSuccess("Successfully signed up for the event!");
     } catch (err: any) {
       setError(err.response?.data?.error || "Failed to sign up for the event.");
@@ -71,7 +71,6 @@ export default function EventDetailPage() {
   };
 
   if (loading || authLoading) {
-    // Added authLoading to ensure user state is ready
     return (
       <div className="min-h-screen flex items-center justify-center pt-24 bg-gray-50">
         <p className="text-gray-600 text-lg">Loading event details...</p>
@@ -174,8 +173,8 @@ export default function EventDetailPage() {
                   >
                     log in
                   </Link>{" "}
-                  to sign up for this event. If you don&apos;t have an account, you
-                  can{" "}
+                  to sign up for this event. If you don&apos;t have an account,
+                  you can{" "}
                   <Link
                     href="/register"
                     className="text-blue-600 hover:underline font-semibold"

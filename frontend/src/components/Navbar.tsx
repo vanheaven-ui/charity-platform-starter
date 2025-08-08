@@ -130,7 +130,7 @@ export default function Navbar() {
             </li>
             <li>
               <Link
-                href="/admin/users" // Link to a future user management page
+                href="/admin/users" 
                 onClick={() => setIsOpen(false)}
                 className="hover:text-pink-500 transition-colors"
               >
@@ -139,7 +139,7 @@ export default function Navbar() {
             </li>
             <li>
               <Link
-                href="/admin/proposals" // Link for admin to manage partner proposals
+                href="/admin/proposals"
                 onClick={() => setIsOpen(false)}
                 className="hover:text-pink-500 transition-colors"
               >
@@ -164,7 +164,7 @@ export default function Navbar() {
         return (
           <li>
             <Link
-              href="/dashboard" // Volunteer dashboard shows signed up events
+              href="/dashboard" 
               onClick={() => setIsOpen(false)}
               className="hover:text-pink-500 transition-colors"
             >
@@ -176,7 +176,7 @@ export default function Navbar() {
         return (
           <li>
             <Link
-              href="/dashboard" // Partner dashboard shows proposals
+              href="/dashboard" 
               onClick={() => setIsOpen(false)}
               className="hover:text-pink-500 transition-colors"
             >
@@ -188,7 +188,7 @@ export default function Navbar() {
         return (
           <li>
             <Link
-              href="/dashboard" // Beneficiary dashboard shows relevant info
+              href="/dashboard"
               onClick={() => setIsOpen(false)}
               className="hover:text-pink-500 transition-colors"
             >
@@ -200,7 +200,7 @@ export default function Navbar() {
         return (
           <li>
             <Link
-              href="/dashboard" // Member dashboard can show membership status
+              href="/dashboard" 
               onClick={() => setIsOpen(false)}
               className="hover:text-pink-500 transition-colors"
             >
@@ -209,7 +209,7 @@ export default function Navbar() {
           </li>
         );
       default:
-        return null; // For 'User' role or any other non-specific role
+        return null; 
     }
   };
 

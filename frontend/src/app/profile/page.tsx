@@ -9,7 +9,15 @@ interface FormData {
   name: string;
   email: string;
   preferredLanguage: string;
-  role: "Donor" | "Volunteer" | "Admin" | "User";
+  role:
+    | "Donor"
+    | "Volunteer"
+    | "Admin"
+    | "User"
+    | "Partner"
+    | "Beneficiary"
+    | "Member"
+    | "Supplier";
 }
 
 export default function Profile() {
@@ -32,10 +40,10 @@ export default function Profile() {
       router.push("/login");
     } else if (user) {
       setFormData({
-        name: user.name,
-        email: user.email,
-        preferredLanguage: user.preferredLanguage || "",
-        role: user.role || "User",
+        name: user.name ?? "",
+        email: user.email ?? "",
+        preferredLanguage: user.preferredLanguage ?? "",
+        role: user.role ?? "User",
       });
     }
   }, [user, loading, router]);

@@ -9,9 +9,18 @@ if (!API_URL) {
 export interface User {
   id: number;
   email: string;
-  role: "Donor" | "Admin" | "Volunteer" | "Partner" | "Beneficiary" | "Supplier" | "Member";
+  role:
+    | "Donor"
+    | "Admin"
+    | "Volunteer"
+    | "Partner"
+    | "Beneficiary"
+    | "Supplier"
+    | "Member"
+    | "User";
   name?: string;
   profileImage?: string;
+  preferredLanguage: string;
 }
 
 export interface RegisterUserData {
@@ -48,8 +57,13 @@ export interface ProjectData {
 export interface Donation {
   id: number;
   amount: number;
+  message?: string;
   projectId: number;
   donorId: number;
+  createdAt: string;
+  project: {
+    name: string;
+  };
 }
 
 export interface DonationData {
@@ -71,15 +85,19 @@ export interface Event {
   id: number;
   title: string;
   description: string;
-  date: string;
-  location: string;
+  locationName: string;
+  locationLat: number;
+  locationLng: number;
+  eventDate: string;
 }
 
 export interface EventData {
   title: string;
   description: string;
-  date: string;
-  location: string;
+  locationName: string;
+  locationLat: number;
+  locationLng: number;
+  eventDate: string;
 }
 
 export interface Volunteer {
@@ -97,9 +115,12 @@ export const verifyFirebaseToken = async (
   idToken: string
 ): Promise<string | null> => {
   try {
-    const response = await axios.post<{ token: string }>(`${API_URL}/auth/google`, {
-      token: idToken,
-    });
+    const response = await axios.post<{ token: string }>(
+      `${API_URL}/auth/google`,
+      {
+        token: idToken,
+      }
+    );
     const { token } = response.data;
     return token;
   } catch (error) {
@@ -112,10 +133,13 @@ export const registerWithFirebaseToken = async (
   idToken: string
 ): Promise<User | null> => {
   try {
-    const response = await axios.post<{ user: User }>(`${API_URL}/google/callback`, {
-      token: idToken,
-      role: "Donor",
-    });
+    const response = await axios.post<{ user: User }>(
+      `${API_URL}/google/callback`,
+      {
+        token: idToken,
+        role: "Donor",
+      }
+    );
     const { user } = response.data;
     return user;
   } catch (error) {
@@ -124,13 +148,20 @@ export const registerWithFirebaseToken = async (
   }
 };
 
-export const registerUser = async (userData: RegisterUserData): Promise<User> => {
+export const registerUser = async (
+  userData: RegisterUserData
+): Promise<User> => {
   const response = await axios.post<User>(`${API_URL}/register`, userData);
   return response.data;
 };
 
-export const loginUser = async (loginData: LoginData): Promise<LoginResponse> => {
-  const response = await axios.post<LoginResponse>(`${API_URL}/login`, loginData);
+export const loginUser = async (
+  loginData: LoginData
+): Promise<LoginResponse> => {
+  const response = await axios.post<LoginResponse>(
+    `${API_URL}/login`,
+    loginData
+  );
   return response.data;
 };
 
@@ -150,12 +181,19 @@ export const getProjects = async (search?: string): Promise<Project[]> => {
   return response.data;
 };
 
-export const createProject = async (projectData: ProjectData, token: string): Promise<Project> => {
-  const response = await axios.post<Project>(`${API_URL}/projects`, projectData, {
-    headers: {
-      Authorization: `Bearer ${token}`,
-    },
-  });
+export const createProject = async (
+  projectData: ProjectData,
+  token: string
+): Promise<Project> => {
+  const response = await axios.post<Project>(
+    `${API_URL}/projects`,
+    projectData,
+    {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    }
+  );
   return response.data;
 };
 
@@ -176,21 +214,34 @@ export const updateProject = async (
   return response.data;
 };
 
-export const deleteProject = async (projectId: number, token: string): Promise<{ message: string }> => {
-  const response = await axios.delete<{ message: string }>(`${API_URL}/projects/${projectId}`, {
-    headers: {
-      Authorization: `Bearer ${token}`,
-    },
-  });
+export const deleteProject = async (
+  projectId: number,
+  token: string
+): Promise<{ message: string }> => {
+  const response = await axios.delete<{ message: string }>(
+    `${API_URL}/projects/${projectId}`,
+    {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    }
+  );
   return response.data;
 };
 
-export const createDonation = async (donationData: DonationData, token: string): Promise<Donation> => {
-  const response = await axios.post<Donation>(`${API_URL}/donations`, donationData, {
-    headers: {
-      Authorization: `Bearer ${token}`,
-    },
-  });
+export const createDonation = async (
+  donationData: DonationData,
+  token: string
+): Promise<Donation> => {
+  const response = await axios.post<Donation>(
+    `${API_URL}/donations`,
+    donationData,
+    {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    }
+  );
   return response.data;
 };
 
@@ -201,7 +252,10 @@ export const getMyDonations = async (token: string): Promise<Donation[]> => {
   return response.data;
 };
 
-export const updateProfile = async (updateData: UpdateProfileData, token: string): Promise<User> => {
+export const updateProfile = async (
+  updateData: UpdateProfileData,
+  token: string
+): Promise<User> => {
   const response = await axios.put<User>(`${API_URL}/profile`, updateData, {
     headers: {
       Authorization: `Bearer ${token}`,
@@ -210,7 +264,9 @@ export const updateProfile = async (updateData: UpdateProfileData, token: string
   return response.data;
 };
 
-export const getDonationsByProject = async (token: string): Promise<DonationByProject[]> => {
+export const getDonationsByProject = async (
+  token: string
+): Promise<DonationByProject[]> => {
   const response = await axios.get<DonationByProject[]>(
     `${API_URL}/dashboard/donations-by-project`,
     {
@@ -222,12 +278,17 @@ export const getDonationsByProject = async (token: string): Promise<DonationByPr
   return response.data;
 };
 
-export const getMonthlyDonations = async (token: string): Promise<MonthlyDonation[]> => {
-  const response = await axios.get<MonthlyDonation[]>(`${API_URL}/dashboard/monthly-donations`, {
-    headers: {
-      Authorization: `Bearer ${token}`,
-    },
-  });
+export const getMonthlyDonations = async (
+  token: string
+): Promise<MonthlyDonation[]> => {
+  const response = await axios.get<MonthlyDonation[]>(
+    `${API_URL}/dashboard/monthly-donations`,
+    {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    }
+  );
   return response.data;
 };
 
@@ -243,7 +304,10 @@ export const getEventById = async (eventId: number): Promise<Event> => {
   return response.data;
 };
 
-export const signUpForEvent = async (eventId: number, token: string): Promise<{ message: string }> => {
+export const signUpForEvent = async (
+  eventId: number,
+  token: string
+): Promise<{ message: string }> => {
   const response = await axios.post<{ message: string }>(
     `${API_URL}/events/${eventId}/signup`,
     {},
@@ -256,7 +320,10 @@ export const signUpForEvent = async (eventId: number, token: string): Promise<{ 
   return response.data;
 };
 
-export const createEvent = async (eventData: EventData, token: string): Promise<Event> => {
+export const createEvent = async (
+  eventData: EventData,
+  token: string
+): Promise<Event> => {
   const response = await axios.post<Event>(`${API_URL}/events`, eventData, {
     headers: {
       Authorization: `Bearer ${token}`,
@@ -270,37 +337,56 @@ export const updateEvent = async (
   eventData: EventData,
   token: string
 ): Promise<Event> => {
-  const response = await axios.put<Event>(`${API_URL}/events/${eventId}`, eventData, {
-    headers: {
-      Authorization: `Bearer ${token}`,
-    },
-  });
+  const response = await axios.put<Event>(
+    `${API_URL}/events/${eventId}`,
+    eventData,
+    {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    }
+  );
   return response.data;
 };
 
-export const deleteEvent = async (eventId: number, token: string): Promise<{ message: string }> => {
-  const response = await axios.delete<{ message: string }>(`${API_URL}/events/${eventId}`, {
-    headers: {
-      Authorization: `Bearer ${token}`,
-    },
-  });
+export const deleteEvent = async (
+  eventId: number,
+  token: string
+): Promise<{ message: string }> => {
+  const response = await axios.delete<{ message: string }>(
+    `${API_URL}/events/${eventId}`,
+    {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    }
+  );
   return response.data;
 };
 
-export const getVolunteersForEvent = async (eventId: number, token: string): Promise<Volunteer[]> => {
-  const response = await axios.get<Volunteer[]>(`${API_URL}/events/${eventId}/volunteers`, {
-    headers: {
-      Authorization: `Bearer ${token}`,
-    },
-  });
+export const getVolunteersForEvent = async (
+  eventId: number,
+  token: string
+): Promise<Volunteer[]> => {
+  const response = await axios.get<Volunteer[]>(
+    `${API_URL}/events/${eventId}/volunteers`,
+    {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    }
+  );
   return response.data;
 };
 
 export const getSignedUpEvents = async (token: string): Promise<Event[]> => {
-  const response = await axios.get<Event[]>(`${API_URL}/users/signed-up-events`, {
-    headers: {
-      Authorization: `Bearer ${token}`,
-    },
-  });
+  const response = await axios.get<Event[]>(
+    `${API_URL}/users/signed-up-events`,
+    {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    }
+  );
   return response.data;
 };

@@ -1,21 +1,11 @@
-// components/dashboards/DonorDashboard.tsx
 import { useEffect, useState } from "react";
 import Link from "next/link";
-import { getMyDonations } from "@/lib/api"; // Use alias
+import { Donation, getMyDonations } from "@/lib/api"; 
 import { format } from "date-fns";
 
-interface Donation {
-  id: number;
-  amount: number;
-  message?: string;
-  createdAt: string;
-  project: {
-    name: string;
-  };
-}
 
 interface DonorDashboardProps {
-  user: any; // User object from AuthContext
+  user: any;
 }
 
 export default function DonorDashboard({ user }: DonorDashboardProps) {
