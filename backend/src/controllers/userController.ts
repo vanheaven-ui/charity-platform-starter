@@ -4,7 +4,10 @@ import { AuthRequest } from "../middleware/authMiddleware";
 
 export const registerUser = async (req: AuthRequest, res: Response) => {
   try {
-    const newUser = await userService.registerUser(req.body);
+    const newUser = await userService.registerUser({
+      ...req.body,
+      preferredLanguage: "en",
+    });
     res.status(201).json(newUser);
   } catch (error: any) {
     res.status(500).json({ error: error.message });
