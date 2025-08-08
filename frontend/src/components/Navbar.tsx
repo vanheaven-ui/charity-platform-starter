@@ -1,4 +1,3 @@
-// components/Navbar.tsx
 "use client";
 import Link from "next/link";
 import { useAuth } from "../context/AuthContext";
@@ -45,7 +44,7 @@ export default function Navbar() {
     setIsTooltipVisible(false); // Hide tooltip when menu is toggled
   };
 
-  // Define common navigation items visible to all users
+  // Common links for all users
   const commonNavItems = (
     <>
       <li>
@@ -78,33 +77,9 @@ export default function Navbar() {
     </>
   );
 
-  // Define navigation items for any logged-in user
-  const authenticatedNavItems = (
-    <>
-      <li>
-        <Link
-          href="/dashboard"
-          onClick={() => setIsOpen(false)}
-          className="hover:text-pink-500 transition-colors"
-        >
-          Dashboard
-        </Link>
-      </li>
-      <li>
-        <Link
-          href="/profile"
-          onClick={() => setIsOpen(false)}
-          className="hover:text-pink-500 transition-colors"
-        >
-          Profile
-        </Link>
-      </li>
-    </>
-  );
-
-  // Define role-specific navigation items
+  // Role-based items
   const roleSpecificNavItems = () => {
-    if (!user) return null; // Only render if user is logged in
+    if (!user) return null;
 
     switch (user.role) {
       case "Admin":
@@ -130,7 +105,7 @@ export default function Navbar() {
             </li>
             <li>
               <Link
-                href="/admin/users" 
+                href="/admin/users"
                 onClick={() => setIsOpen(false)}
                 className="hover:text-pink-500 transition-colors"
               >
@@ -164,7 +139,7 @@ export default function Navbar() {
         return (
           <li>
             <Link
-              href="/dashboard" 
+              href="/my-volunteering"
               onClick={() => setIsOpen(false)}
               className="hover:text-pink-500 transition-colors"
             >
@@ -176,7 +151,7 @@ export default function Navbar() {
         return (
           <li>
             <Link
-              href="/dashboard" 
+              href="/my-partnerships"
               onClick={() => setIsOpen(false)}
               className="hover:text-pink-500 transition-colors"
             >
@@ -188,7 +163,7 @@ export default function Navbar() {
         return (
           <li>
             <Link
-              href="/dashboard"
+              href="/my-support"
               onClick={() => setIsOpen(false)}
               className="hover:text-pink-500 transition-colors"
             >
@@ -200,7 +175,7 @@ export default function Navbar() {
         return (
           <li>
             <Link
-              href="/dashboard" 
+              href="/my-membership"
               onClick={() => setIsOpen(false)}
               className="hover:text-pink-500 transition-colors"
             >
@@ -208,12 +183,57 @@ export default function Navbar() {
             </Link>
           </li>
         );
+      case "BoardMember":
+        return (
+          <li>
+            <Link
+              href="/board-dashboard"
+              onClick={() => setIsOpen(false)}
+              className="hover:text-pink-500 transition-colors"
+            >
+              Board Dashboard
+            </Link>
+          </li>
+        );
+      case "Supplier":
+        return (
+          <li>
+            <Link
+              href="/supplier-dashboard"
+              onClick={() => setIsOpen(false)}
+              className="hover:text-pink-500 transition-colors"
+            >
+              Supplier Dashboard
+            </Link>
+          </li>
+        );
       default:
-        return null; 
+        return null;
     }
   };
 
-  // Authentication buttons (Login/Register or Logout)
+  // Optional profile link for non-admin users
+  const authenticatedNavItems = () => {
+    if (!user) return null;
+
+    switch (user.role) {
+      case "Admin":
+        return null;
+      default:
+        return (
+          <li>
+            <Link
+              href="/profile"
+              onClick={() => setIsOpen(false)}
+              className="hover:text-pink-500 transition-colors"
+            >
+              Profile
+            </Link>
+          </li>
+        );
+    }
+  };
+
   const authButtons = user ? (
     <li>
       <Button
@@ -248,14 +268,11 @@ export default function Navbar() {
 
   return (
     <nav
-      className={`
-        fixed top-0 w-full z-50 transition-all duration-300 ease-in-out
-        ${
-          scrolled || !isHomePage
-            ? "bg-slate-900 bg-opacity-90 shadow-lg py-3"
-            : "bg-transparent py-6"
-        }
-      `}
+      className={`fixed top-0 w-full z-50 transition-all duration-300 ease-in-out ${
+        scrolled || !isHomePage
+          ? "bg-slate-900 bg-opacity-90 shadow-lg py-3"
+          : "bg-transparent py-6"
+      }`}
     >
       <div className="container mx-auto flex justify-between items-center px-4">
         <div className="text-xl md:text-2xl font-extrabold transition-colors">
@@ -272,12 +289,12 @@ export default function Navbar() {
         {/* Desktop Menu */}
         <ul className="hidden md:flex space-x-6 items-center text-white">
           {commonNavItems}
-          {user && authenticatedNavItems} {/* Show these only if logged in */}
-          {roleSpecificNavItems()} {/* Show role-specific links */}
+          {roleSpecificNavItems()}
+          {authenticatedNavItems()}
           {authButtons}
         </ul>
 
-        {/* Mobile Menu Button with Circular Text Icon and Tooltip */}
+        {/* Mobile Menu Button */}
         <div className="relative md:hidden">
           <button
             onClick={toggleMenu}
@@ -296,11 +313,9 @@ export default function Navbar() {
 
         {/* Mobile Menu */}
         <div
-          className={`
-            fixed top-0 left-0 h-full w-64 bg-slate-900 bg-opacity-95 z-50
-            transform transition-transform duration-300 ease-in-out
-            ${isOpen ? "translate-x-0" : "-translate-x-full"} md:hidden
-          `}
+          className={`fixed top-0 left-0 h-full w-64 bg-slate-900 bg-opacity-95 z-50 transform transition-transform duration-300 ease-in-out ${
+            isOpen ? "translate-x-0" : "-translate-x-full"
+          } md:hidden`}
         >
           <div className="flex justify-end p-4">
             <button
@@ -325,8 +340,8 @@ export default function Navbar() {
           </div>
           <ul className="flex flex-col items-center space-y-6 text-white text-xl p-8">
             {commonNavItems}
-            {user && authenticatedNavItems}
             {roleSpecificNavItems()}
+            {authenticatedNavItems()}
             {authButtons}
           </ul>
         </div>

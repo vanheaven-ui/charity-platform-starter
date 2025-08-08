@@ -2,22 +2,15 @@
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { useAuth } from "@/context/AuthContext";
-import { updateProfile } from "@/lib/api";
+import { updateProfile, Role } from "@/lib/api"; 
 import { Button } from "@/components/Button";
 
+// The FormData interface now uses the imported Role type
 interface FormData {
   name: string;
   email: string;
   preferredLanguage: string;
-  role:
-    | "Donor"
-    | "Volunteer"
-    | "Admin"
-    | "User"
-    | "Partner"
-    | "Beneficiary"
-    | "Member"
-    | "Supplier";
+  role: Role;
 }
 
 export default function Profile() {
@@ -27,13 +20,25 @@ export default function Profile() {
     name: "",
     email: "",
     preferredLanguage: "",
-    role: "User",
+    role: "Member", 
   });
   const [password, setPassword] = useState("");
   const [isEditing, setIsEditing] = useState(false);
   const [apiLoading, setApiLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState<string | null>(null);
+
+  // List of all possible roles to populate the dropdown
+  const allRoles: Role[] = [
+    "Admin",
+    "Donor",
+    "Beneficiary",
+    "Partner",
+    "Supplier",
+    "BoardMember",
+    "Volunteer",
+    "Member",
+  ];
 
   useEffect(() => {
     if (!loading && !user) {
@@ -43,7 +48,7 @@ export default function Profile() {
         name: user.name ?? "",
         email: user.email ?? "",
         preferredLanguage: user.preferredLanguage ?? "",
-        role: user.role ?? "User",
+        role: user.role ?? "Member", // Ensure default role is from the new list
       });
     }
   }, [user, loading, router]);
@@ -52,7 +57,7 @@ export default function Profile() {
     e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>
   ) => {
     const { name, value } = e.target;
-    setFormData((prev) => ({ ...prev, [name]: value }));
+    setFormData((prev) => ({ ...prev, [name]: value as Role })); // Ensure role is cast to the correct type
   };
 
   const handlePasswordChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -197,14 +202,11 @@ export default function Profile() {
                     onChange={handleChange}
                     className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-blue-500 focus:border-blue-500 transition-colors"
                   >
-                    <option value="User">User</option>
-                    <option value="Volunteer">Volunteer</option>
-                    {user.role === "Admin" && (
-                      <option value="Admin">Admin</option>
-                    )}
-                    {user.role === "Donor" && (
-                      <option value="Donor">Donor</option>
-                    )}
+                    {allRoles.map((r) => (
+                      <option key={r} value={r}>
+                        {r}
+                      </option>
+                    ))}
                   </select>
                 </div>
                 <div>

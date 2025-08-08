@@ -6,18 +6,21 @@ if (!API_URL) {
   throw new Error("NEXT_PUBLIC_API_URL is not defined");
 }
 
+// Define a new Role type that includes all roles from the backend schema
+export type Role =
+  | "Admin"
+  | "Donor"
+  | "Beneficiary"
+  | "Partner"
+  | "Supplier"
+  | "BoardMember"
+  | "Volunteer"
+  | "Member";
+
 export interface User {
   id: number;
   email: string;
-  role:
-    | "Donor"
-    | "Admin"
-    | "Volunteer"
-    | "Partner"
-    | "Beneficiary"
-    | "Supplier"
-    | "Member"
-    | "User";
+  role: Role; // Use the new Role type
   name?: string;
   profileImage?: string;
   preferredLanguage: string;
@@ -26,7 +29,7 @@ export interface User {
 export interface RegisterUserData {
   email: string;
   password: string;
-  role: "Donor" | "Admin" | "Volunteer";
+  role: Role; // Use the new Role type
   name?: string;
 }
 
@@ -42,14 +45,14 @@ export interface LoginResponse {
 
 export interface Project {
   id: number;
-  title: string;
+  name: string;
   description: string;
   goal: number;
   raised: number;
 }
 
 export interface ProjectData {
-  title: string;
+  name: string;
   description: string;
   goal: number;
 }
@@ -69,6 +72,7 @@ export interface Donation {
 export interface DonationData {
   amount: number;
   projectId: number;
+  message?: string;
 }
 
 export interface DonationByProject {
@@ -129,15 +133,17 @@ export const verifyFirebaseToken = async (
   }
 };
 
+// Update this function to accept the selected role
 export const registerWithFirebaseToken = async (
-  idToken: string
+  idToken: string,
+  role: Role
 ): Promise<User | null> => {
   try {
     const response = await axios.post<{ user: User }>(
       `${API_URL}/google/callback`,
       {
         token: idToken,
-        role: "Donor",
+        role: role, // Pass the selected role
       }
     );
     const { user } = response.data;

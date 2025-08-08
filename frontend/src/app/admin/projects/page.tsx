@@ -7,15 +7,8 @@ import {
   createProject,
   updateProject,
   deleteProject,
+  Project
 } from "../../../lib/api";
-
-interface Project {
-  id: number;
-  name: string;
-  description: string;
-  goal: number;
-  raised: number;
-}
 
 export default function AdminProjects() {
   const { user, loading } = useAuth();

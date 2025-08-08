@@ -1,3 +1,4 @@
+"use client";
 import { useEffect, useState } from "react";
 import Link from "next/link";
 import type { ChartOptions, FontSpec } from "chart.js";
@@ -5,6 +6,8 @@ import {
   getDonationsByProject,
   getMonthlyDonations,
   getProjects,
+  DonationByProject,
+  MonthlyDonation,
 } from "@/lib/api";
 import { Bar, Line } from "react-chartjs-2";
 import {
@@ -19,6 +22,7 @@ import {
   Legend,
 } from "chart.js";
 
+// Register the necessary Chart.js components
 ChartJS.register(
   CategoryScale,
   LinearScale,
@@ -30,30 +34,21 @@ ChartJS.register(
   Legend
 );
 
+// Interface for the Project model
 interface Project {
   id: number;
   name: string;
 }
 
-interface ChartDataPoint {
-  projectId: number;
-  _sum: {
-    amount: number;
-  };
-}
-
-interface MonthlyDonation {
-  month: string;
-  totalAmount: number;
-}
-
+// Interface for the component's props
 interface AdminDashboardProps {
   user: any; // User object from AuthContext
 }
 
 export default function AdminDashboard({ user }: AdminDashboardProps) {
+  // State for chart data and loading status
   const [donationsByProject, setDonationsByProject] = useState<
-    ChartDataPoint[]
+    DonationByProject[]
   >([]);
   const [monthlyDonations, setMonthlyDonations] = useState<MonthlyDonation[]>(
     []
@@ -62,6 +57,7 @@ export default function AdminDashboard({ user }: AdminDashboardProps) {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
+  // useEffect hook to fetch data when the user changes
   useEffect(() => {
     const fetchData = async () => {
       setLoading(true);
@@ -91,17 +87,21 @@ export default function AdminDashboard({ user }: AdminDashboardProps) {
     fetchData();
   }, [user]);
 
+  // Helper function to get a project's name
   const getProjectName = (projectId: number) => {
     const project = projects.find((p) => p.id === projectId);
     return project ? project.name : `Project ${projectId}`;
   };
 
+  // Data for the bar chart
   const barChartData = {
-    labels: donationsByProject.map((d) => getProjectName(d.projectId)),
+    // Use `projectTitle` as the labels from the API data
+    labels: donationsByProject.map((d) => d.projectTitle),
     datasets: [
       {
         label: "Total Donations ($)",
-        data: donationsByProject.map((d) => d._sum.amount),
+        // Use `totalDonations` for the data values
+        data: donationsByProject.map((d) => d.totalDonations),
         backgroundColor: "rgba(59, 130, 246, 0.5)", // blue-500
         borderColor: "rgba(59, 130, 246, 1)", // blue-500
         borderWidth: 1,
@@ -109,6 +109,7 @@ export default function AdminDashboard({ user }: AdminDashboardProps) {
     ],
   };
 
+  // Data for the line chart
   const lineChartData = {
     labels: monthlyDonations.map((d) => d.month),
     datasets: [
@@ -123,6 +124,7 @@ export default function AdminDashboard({ user }: AdminDashboardProps) {
     ],
   };
 
+  // Chart options to maintain consistency
   const chartOptions: ChartOptions<"bar" | "line"> = {
     responsive: true,
     maintainAspectRatio: false,
@@ -177,6 +179,7 @@ export default function AdminDashboard({ user }: AdminDashboardProps) {
     },
   };
 
+  // Loading state
   if (loading) {
     return (
       <div className="flex items-center justify-center h-full">
@@ -185,6 +188,7 @@ export default function AdminDashboard({ user }: AdminDashboardProps) {
     );
   }
 
+  // Render the dashboard UI
   return (
     <div className="p-8 bg-gray-50 rounded-xl shadow-md border border-gray-100">
       <h2 className="text-3xl font-bold text-gray-800 mb-6">Admin Overview</h2>
@@ -201,9 +205,9 @@ export default function AdminDashboard({ user }: AdminDashboardProps) {
             options={{
               ...chartOptions,
               plugins: {
-                ...chartOptions.plugins,
+                ...chartOptions.plugins!,
                 title: {
-                  ...chartOptions.plugins.title,
+                  ...chartOptions.plugins!.title,
                   text: "Donations by Project",
                 },
               },
@@ -216,9 +220,9 @@ export default function AdminDashboard({ user }: AdminDashboardProps) {
             options={{
               ...chartOptions,
               plugins: {
-                ...chartOptions.plugins,
+                ...chartOptions.plugins!,
                 title: {
-                  ...chartOptions.plugins.title,
+                  ...chartOptions.plugins!.title,
                   text: "Monthly Donations Over Time",
                 },
               },

@@ -21,7 +21,7 @@ export const GoogleMapComponent: React.FC<GoogleMapProps> = ({
 }) => {
   const { isLoaded, loadError } = useJsApiLoader({
     id: "google-map-script",
-    googleMapsApiKey: process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY || "", // Make sure to set this env variable
+    googleMapsApiKey: process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY || "", 
   });
 
   if (loadError) {

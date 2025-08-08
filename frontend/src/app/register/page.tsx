@@ -4,6 +4,7 @@ import {
   registerUser,
   registerWithFirebaseToken,
   RegisterUserData,
+  Role, // Import the new Role type
 } from "../../lib/api";
 import { useRouter } from "next/navigation";
 import { Button } from "../../components/Button";
@@ -33,7 +34,8 @@ export default function Register() {
     email: "",
     password: "",
   });
-  const [role, setRole] = useState<"Donor" | "Volunteer" | "Admin">("Donor");
+  // Use the new Role type for the state
+  const [role, setRole] = useState<Role>("Donor");
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
@@ -81,7 +83,8 @@ export default function Register() {
       const result = await signInWithPopup(auth, provider);
       const idToken = await result.user.getIdToken();
 
-      const backendResponse = await registerWithFirebaseToken(idToken);
+      // Pass the selected role to the backend function
+      const backendResponse = await registerWithFirebaseToken(idToken, role);
       if (backendResponse) {
         console.log("Google registration successful!", backendResponse);
         router.push("/login");
@@ -95,6 +98,17 @@ export default function Register() {
       setIsLoading(false);
     }
   };
+
+  // List of all roles to be used in the dropdown
+  const allRoles: Role[] = [
+    "Donor",
+    "Volunteer",
+    "Beneficiary",
+    "Partner",
+    "Supplier",
+    "BoardMember",
+    "Member",
+  ];
 
   return (
     <div className="pt-20 min-h-screen bg-gray-100">
@@ -165,15 +179,18 @@ export default function Register() {
                 id="role"
                 name="role"
                 value={role}
-                onChange={(e) =>
-                  setRole(e.target.value as "Donor" | "Volunteer" | "Admin")
+                onChange={
+                  (e) => setRole(e.target.value as Role) // Cast to the correct Role type
                 }
                 required
                 className="mt-1 block w-full pl-3 pr-10 py-2 text-base border-gray-300 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm rounded-md"
               >
-                <option value="Donor">Donor</option>
-                <option value="Volunteer">Volunteer</option>
-                <option value="Admin">Admin</option>
+                {/* Dynamically render all roles from the list */}
+                {allRoles.map((r) => (
+                  <option key={r} value={r}>
+                    {r}
+                  </option>
+                ))}
               </select>
             </div>
             <Button
