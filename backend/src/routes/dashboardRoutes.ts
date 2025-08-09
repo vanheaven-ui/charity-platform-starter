@@ -4,7 +4,6 @@ import { protect } from "../middleware/authMiddleware";
 
 const router = Router();
 
-// Route to get donation data for charts
 router.get(
   "/donations-by-project",
   protect,
