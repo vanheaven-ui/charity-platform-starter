@@ -15,14 +15,25 @@ dotenv.config();
 const app = express();
 const port = process.env.PORT || 5000;
 
-// CORS configuration to allow requests from the frontend
+const allowedOrigins = [
+  "http://localhost:3000", // local dev
+  "https://charity-platform-starter.vercel.app", // production
+];
+
 app.use(
   cors({
-    origin: "https://charity-platform-starter.vercel.app/",
+    origin: (origin, callback) => {
+      if (!origin || allowedOrigins.includes(origin)) {
+        callback(null, true);
+      } else {
+        callback(new Error("Not allowed by CORS"));
+      }
+    },
+    credentials: true,
   })
 );
 
-app.use(express.json()); // Enabale Express to parse JSON bodies
+app.use(express.json()); // Enable Express to parse JSON bodies
 
 app.use("/api", userRoutes);
 app.use("/api/projects", projectRoutes);
